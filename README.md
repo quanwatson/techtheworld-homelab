@@ -1,3 +1,7 @@
+> 🔍 **For employers and reviewers:**  
+> See [README_FOR_EMPLOYERS.md](README_FOR_EMPLOYERS.md) for project intent, mindset, and professional context.
+
+
 # TechTheWorld Homelab  
 ## Enterprise-Style Validation & Learning Environment
 
