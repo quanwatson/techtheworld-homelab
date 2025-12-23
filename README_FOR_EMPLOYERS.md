@@ -1,7 +1,3 @@
-> 🔍 **For employers and reviewers:**  
-> See [README_FOR_EMPLOYERS.md](README_FOR_EMPLOYERS.md) for project intent, mindset, and professional context.
-
-
 # HomeLab Project – Professional Context (For Employers)
 
 ## Executive Summary (TL;DR)
