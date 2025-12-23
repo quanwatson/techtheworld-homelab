@@ -1,0 +1,49 @@
+<<<<<<< HEAD
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets (never commit)
+*.key
+*.pem
+*.pfx
+*.p12
+*.kdbx
+secrets/
+.env
+.env.*
+
+# Exports / backups
+exports/
+backups/
+*.bak
+
+# Logs
+*.log
+=======
+# --- Secrets & environment files ---
+.env
+.env.*
+secrets/
+credentials/
+
+# --- Logs ---
+*.log
+logs/*.log
+!logs/homelab-log.md
+
+
+# --- OS / Editor noise ---
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+
+# --- Temporary / cache ---
+tmp/
+cache/
+>>>>>>> 859a8c1c8a4ec77b44982bcfa30bf217c7da3eed

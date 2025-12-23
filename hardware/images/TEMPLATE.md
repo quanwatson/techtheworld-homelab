@@ -1,0 +1,3 @@
+# hardware/images
+
+Template placeholder.
