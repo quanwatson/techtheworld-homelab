@@ -1,194 +1,209 @@
 ﻿# Build Journal
 
-## 20251219
+## 12-19-2025
 
-### 20251219001
+### BJ-001
 **Change:** Documentation repository initialized  
-**Notes:** Began homelab project using a documentation-first methodology. Established Git-based change tracking prior to any infrastructure changes.
+**Notes:**  
+Initialized homelab repository using a documentation-first approach. Established Git-based version control before making any infrastructure changes to ensure traceability and rollback capability from day one.
+
+**Status:** Baseline documentation environment created
 
 ---
 
-### 20251219002
+### BJ-002
 **Change:** Network design documentation completed  
-**Notes:** Defined home vs homelab segmentation strategy, IP addressing plan, and pfSense firewall placement prior to hardware deployment.
+**Notes:**  
+Documented initial network architecture, including home vs lab segmentation strategy, IP addressing scheme, and pfSense firewall placement. Design decisions were recorded prior to hardware deployment to reduce configuration drift.
+
+**Status:** Network design approved
 
 ---
 
-### 20251219003
+### BJ-003
 **Change:** Packet Tracer validation deferred  
-**Notes:** Cisco NetAcad maintenance prevented Packet Tracer login. Proceeded with documentation-first design. Simulation to be completed once service availability is restored.
+**Notes:**  
+Cisco NetAcad service outage prevented Packet Tracer access. Decision made to proceed with documentation-driven design and defer simulation until tooling access is restored.
+
+**Status:** Deferred, no impact to build sequence
 
 ---
 
-### 20251219004
+### BJ-004
 **Change:** pfSense deployment planned and documented  
-**Notes:** Defined firewall role, interface assignments, installation safety checklist, and rollback strategy prior to installation to prevent home network disruption.
+**Notes:**  
+Defined pfSense role, interface mapping, installation checklist, and rollback strategy. Planning emphasized minimizing risk to the existing home network during initial firewall insertion.
+
+**Status:** Approved for installation
 
 ---
 
-### 20251219005
-**Change:** Documentation-first phase completed and validated  
-**Notes:** 
-- Git repository initialized and structured
-- Network design and pfSense planning fully documented
-- All changes committed and pushed to GitHub
-- Environment confirmed clean prior to any hardware or network changes
+### BJ-005
+**Change:** Documentation-first phase completed  
+**Notes:**  
+- Repository structure finalized  
+- Network and firewall plans committed and pushed  
+- No hardware or network changes made prior to documentation lock  
 
-**Status:** Approved to proceed with controlled pfSense installation (Step 4)
+**Status:** Cleared to proceed with controlled firewall deployment
 
 ---
 
-## 20251220
+## 12-20-2025
 
-### 20251220001
+### BJ-006
 **Change:** pfSense installed and staged on bare metal  
-**Notes:** pfSense CE 2.8.1 installed on dedicated firewall appliance. Initial installation performed in isolated state. Temporary WAN connection used only to satisfy first-run connectivity checks, then validated and stabilized.
+**Notes:**  
+Installed pfSense CE 2.8.1 on dedicated firewall hardware. Initial setup performed in an isolated state. Temporary WAN connectivity used only for first-run validation, then stabilized.
+
+**Status:** Firewall installed, not yet segmented
 
 ---
 
-### 20251220002
-**Change:** pfSense configuration validated and baseline established  
-**Notes:** 
-- Filesystem selected: UFS (due to 2 GB RAM constraint)
-- WAN configured as DHCP client and verified UP
-- LAN configured at 192.168.1.1/24 with DHCP enabled
-- Outbound connectivity validated:
-  - ICMP to public IP (8.8.8.8): SUCCESS
-  - DNS resolution (google.com): SUCCESS
-- IPv6 services intentionally disabled:
-  - DHCPv6 Server disabled
-  - Router Advertisements disabled
-- Rationale: IPv4-only lab for stability and foundational learning
-- Configuration backups saved for rollback
-
-**Status:** Step 4 complete and stable  
-**Next Step:** Network structuring and segmentation (VLANs, topology)
-
-## 20251220008
-
-**Date:** 2025-12-20  
-**Change:** Canonical repository structure established and published  
+### BJ-007
+**Change:** pfSense baseline configuration validated  
 **Notes:**  
-- Identified structural divergence between development devices and GitHub  
-- Confirmed Git does not track empty directories  
-- Added `.gitkeep` placeholders to all structural folders to enforce tracking  
-- Published full directory taxonomy to GitHub as the authoritative state  
-- Designated Dell OptiPlex 3080 as the primary authoring and execution device  
-- Established GitHub as the single source of truth for all environments  
+- Filesystem: UFS selected due to 2 GB RAM constraint  
+- WAN configured as DHCP client and verified operational  
+- LAN configured as `192.168.1.1/24` with DHCP enabled  
+- Outbound connectivity validated via ICMP and DNS  
+- IPv6 services intentionally disabled to maintain IPv4-only lab simplicity  
+- Configuration backups captured for rollback  
 
-**Status:** Repository structure stabilized  
-**Next Step:** Begin content population via playbooks and runbooks
+**Status:** Firewall baseline stable
 
-## 20251220009
+---
 
-**Date:** 2025-12-20  
-**Change:** pfSense internal network architecture documented and baseline locked  
+### BJ-008
+**Change:** Canonical repository structure published  
 **Notes:**  
-- Renamed pfSense interfaces to reflect functional roles (`WAN_UPSTREAM`, `LAN_CORE`)  
-- Verified LAN DHCP configuration and default firewall behavior  
-- Confirmed intentional double-NAT topology with upstream gateway `192.168.68.1`  
-- Documented current network topology as a stable baseline state  
-- Designed initial VLAN segmentation plan (LAB, IOT, MGMT) without applying configuration  
-- Preserved system stability by deferring segmentation until planning was complete  
+- Identified folder structure inconsistencies across devices  
+- Confirmed Git behavior regarding empty directories  
+- Added `.gitkeep` placeholders to enforce directory tracking  
+- Published GitHub repository as the authoritative source  
+- Designated Dell OptiPlex 3080 as primary authoring system  
 
-**Status:** Internal architecture stabilized and documented  
-**Next Step:** Implement VLAN segmentation starting with VLAN 10 (LAB)
+**Status:** Repository structure locked
 
-## 20251220010
+---
 
-**Date:** 2025-12-20  
-**Change:** Implemented first VLAN (VLAN 10 – LAB) on pfSense  
+### BJ-009
+**Change:** pfSense internal architecture documented and locked  
 **Notes:**  
-- Created VLAN 10 on `LAN_CORE` as the parent interface  
-- Assigned VLAN 10 as a routed interface (`LAB_VLAN10`)  
-- Configured static gateway `192.168.10.1/24`  
-- Enabled DHCP scope for VLAN 10  
-- Applied initial firewall rule allowing outbound traffic  
-- Deferred switch-side VLAN configuration pending validation  
+- Renamed interfaces to functional identifiers (`WAN_UPSTREAM`, `LAN_CORE`)  
+- Verified LAN DHCP and default firewall policy behavior  
+- Confirmed intentional double-NAT with upstream gateway `192.168.68.1`  
+- Documented current topology as a stable baseline  
+- Designed VLAN segmentation plan (LAB, IOT, MGMT) without applying changes  
 
-**Status:** VLAN 10 routed and operational at the firewall layer  
-**Next Step:** Attach VLAN 10 to a switch port and validate client connectivity
+**Status:** Architecture documented, no segmentation applied yet
 
-<<<<<<< HEAD
-## 20251221011
+---
 
-**Date:** 2025-12-21  
-**Change:** Added network documentation artifacts (Topology + VLAN Plan)  
+### BJ-010
+**Change:** VLAN 10 (LAB) implemented on pfSense  
+**Notes:**  
+- Created VLAN 10 on `LAN_CORE`  
+- Assigned routed interface `LAB_VLAN10`  
+- Configured gateway `192.168.10.1/24`  
+- Enabled DHCP for VLAN 10  
+- Applied initial outbound allow rule  
+- Deferred switch configuration to isolate variables  
 
+**Status:** VLAN 10 operational at Layer 3
+
+---
+
+## 12-21-2025
+
+### BJ-011
+**Change:** Network documentation artifacts added  
 **Notes:**  
 - Updated `network/topology.md` to reflect segmented design  
-- Created `network/vlan-plan.md` as a VLAN source-of-truth  
+- Created `network/vlan-plan.md` as VLAN source of truth  
 - Established VLAN 10 as the reference implementation pattern  
-- Explicitly deferred switch configuration to avoid multi-variable troubleshooting  
+- Explicitly deferred switch-side changes  
 
-**Status:** Network documentation aligned with live pfSense state  
-**Next Step:** Proceed with managed switch integration (STEP 7)
+**Status:** Documentation aligned with live firewall state
 
-## 20251221012
+---
 
-**Date:** 2025-12-21  
-**Change:** Introduced standardized Git / repo workflow playbook  
-
+### BJ-012
+**Change:** Repository workflow standardized  
 **Notes:**  
-- Added `playbooks/repo-workflow-playbook.md`  
-- Standardized session flow (status → stage → commit → push)  
-- Defined when to stage everything vs selectively stage  
+- Added Git workflow playbook  
+- Defined standard session flow (status → stage → commit → push)  
 - Established commit message conventions  
 - Locked logging discipline rules  
 
-**Status:** Repo workflow standardized across devices  
-**Next Step:** Apply workflow consistently for all future sessions
+**Status:** Workflow standardized
 
-## 20251221013
+---
 
-**Date:** 2025-12-21  
-**Change:** Re-anchored homelab build steps to prevent step drift  
+### BJ-013
+**Change:** Build roadmap re-anchored  
+**Notes:**  
+- Confirmed active phase: **Switch Integration**  
+- Defined clear Definition of Done for switch phase  
+- Locked rule: no additional VLANs until VLAN 10 is validated end-to-end  
+
+**Status:** Roadmap stabilized
+
+---
+
+## 12-22-2025
+
+### BJ-014
+**Change:** Git repository recovered after relocation  
+**Notes:**  
+- Repository directory moved, resulting in loss of `.git` metadata  
+- Reinitialized Git and reattached to existing GitHub remote  
+- Resolved authentication via fine-grained GitHub PAT  
+- Reconciled divergent histories using `--allow-unrelated-histories`  
+- Confirmed `main` branch tracking `origin/main`  
+
+**Status:** Repository fully operational
+
+---
+
+### BJ-015
+**Change:** Documentation and control-plane baseline locked  
+**Notes:**  
+- Finalized Network Playbook lifecycle (Design → Implement → Validate → Document → Promote)  
+- Standardized role-specific and platform command libraries  
+- Confirmed documentation readiness prior to switch-side changes  
+
+**Status:** Cleared for Layer 2 enforcement
+
+---
+
+### BJ-016
+**Change:** Switch management interface established  
+**Notes:**  
+- Cisco Catalyst 3560 (`switchOTS`) reset to baseline  
+- Management moved to VLAN 10  
+- DHCP-assigned management IP: `192.168.10.101`  
+- Console and web GUI access verified  
+- VLAN 1 management intentionally disabled  
+
+**Status:** Switch Phase 1 complete  
+**Next Step:** Secure management plane (SSH, users) and begin VLAN port enforcement
+
+## 12-23-2025
+
+### BJ-017 
+**Change:** Documentation and governance baseline locked  
 
 **Notes:**  
-- Confirmed current active step: **STEP 7 — Switch Integration**  
-- Clarified Definition of Done for STEP 7  
-- Locked rule: no new VLANs or switch tagging until VLAN 10 validation completes  
+- Finalized repository-wide documentation structure  
+- Standardized security, networking, firewall, and validation artifacts  
+- Resolved all outstanding merge conflicts in core documentation  
+- Established README as authoritative navigation guide for reviewers  
+- Confirmed documentation accurately reflects current lab state (home-based, pfSense + VLAN 10 active)  
 
-**Status:** Build roadmap stabilized  
-**Next Step:** Execute switch VLAN tagging and port assignment
+**Impact:**  
+- No infrastructure changes  
+- Documentation now serves as the control plane for future lab work  
 
-## 20251222001
-
-**Date:** 2025-12-22  
-**Change:** Restored Git tracking after repo relocation and reconciled remote history  
-**Notes:**  
-- Local homelab repository was moved, resulting in loss of `.git` metadata  
-- Re-initialized Git repository and reattached to existing GitHub remote  
-- Resolved authentication using fine-grained GitHub PAT (org-scoped)  
-- Identified non-fast-forward rejection due to divergent histories  
-- Successfully reconciled local and remote histories using `--allow-unrelated-histories`  
-- Confirmed local `main` branch now tracks `origin/main`  
-
-**Status:** Repository fully synchronized and operational  
-**Next Step:** Resume normal documentation and lab progression
-
-## 2025-12-22 — Documentation & Control Plane Baseline Locked
-
-**Change Type:** Architecture / Documentation Baseline  
-**Scope:** Repository, Network Playbook, Command Libraries  
-
-**Summary:**  
-Finalized and locked the foundational documentation and control structure for the homelab prior to switch integration. Network Playbook, Role-Specific Command Library, and Windows/Linux Command Library were completed and aligned to the existing repo hierarchy.
-
-**Key Outcomes:**
-- Network Playbook established as authoritative lifecycle guide (Design → Implement → Validate → Document → Promote)
-- Role-specific and platform command libraries standardized for copy/paste operational use
-- Git repository re-initialized and successfully reconnected after directory relocation
-- Authentication and ownership corrected to personal GitHub account
-- Confirmed readiness for switch-side VLAN integration (next phase)
-
-**Risk / Impact:**  
-None. No production services impacted.
-
-**Next Phase:**  
-Switch integration and VLAN enforcement at Layer 2.
-
-
-
-=======
->>>>>>> 859a8c1c8a4ec77b44982bcfa30bf217c7da3eed
+**Status:** Baseline locked  
+**Next Step:** Resume physical switch configuration and VLAN enforcement (Phase 3)

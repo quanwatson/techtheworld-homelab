@@ -1,61 +1,67 @@
 # Security Validation Checklist (Per Phase)
 
-This checklist is used to validate security posture as the lab evolves through its lifecycle.
-Each phase builds on the previous one. A phase is considered **complete only when all applicable checks pass**.
+This checklist is used to validate security posture as the homelab evolves through
+its lifecycle. Each phase builds on the previous one.
+
+A phase is considered **complete only when all applicable checks pass**.
+Items that are not yet applicable should remain unchecked until implemented.
 
 ---
 
-## Phase 1 — Baseline Network & Isolation
+## Phase 1 — Baseline Network & Isolation (Active)
 
-**Objective:** Ensure the lab is safely isolated from the home network and internet exposure is controlled.
+**Objective:** Ensure the lab is safely isolated from the home network and
+internet exposure is controlled.
 
 ### Network Isolation
-- [ ] Lab traffic is isolated from the home network by a firewall boundary
-- [ ] Double NAT is intentional and documented
-- [ ] No inbound access from the internet to internal lab networks
-- [ ] Default deny rules exist at the perimeter
+- [x] Lab traffic is isolated from the home network by a firewall boundary
+- [x] Double NAT is intentional and documented
+- [x] No inbound access from the internet to internal lab networks
+- [x] Default deny behavior exists at the perimeter
 
 ### Firewall & Routing
-- [ ] Outbound internet access is explicitly allowed
-- [ ] No implicit inbound rules exist
-- [ ] Firewall configuration is backed up or documented
+- [x] Outbound internet access is explicitly allowed
+- [x] No implicit inbound rules exist
+- [x] Firewall configuration is backed up or documented
 
 ### Validation Evidence
-- [ ] Topology documented in `network/topology.md`
-- [ ] Build journal entry recorded for baseline isolation
+- [x] Topology documented in `network/topology.md`
+- [x] Build Journal entry recorded for baseline isolation
 
 ---
 
-## Phase 2 — Network Segmentation & Trust Zones
+## Phase 2 — Network Segmentation & Trust Zones (Partially Active)
 
 **Objective:** Establish explicit trust boundaries using VLANs and firewall policy.
 
 ### VLAN Architecture
-- [ ] VLANs are defined with clear purpose and risk level
-- [ ] IP subnets do not overlap
-- [ ] Default deny exists between VLANs
+- [x] VLANs are defined with clear purpose and risk level
+- [x] IP subnets do not overlap
+- [x] Default deny exists between VLANs
+- [ ] Multiple internal VLANs implemented (beyond LAB)
 
 ### Inter-VLAN Controls
-- [ ] All inter-VLAN traffic requires explicit firewall rules
-- [ ] No “any-to-any” rules between internal VLANs
-- [ ] Justification exists for every allowed flow
+- [x] Inter-VLAN traffic requires explicit firewall rules
+- [x] No “any-to-any” rules between internal VLANs
+- [ ] Justification exists for every allowed inter-VLAN flow
 
 ### Trust-Zone Validation
-- [ ] Trust-zone matrix is defined and reviewed
-- [ ] IOT VLAN has no access to MGMT or LAB
-- [ ] MGMT VLAN access is tightly restricted
+- [x] Trust-zone matrix is defined and reviewed
+- [ ] IOT VLAN has no access to MGMT or LAB (not yet implemented)
+- [ ] MGMT VLAN access is tightly restricted (not yet implemented)
 
 ### Validation Evidence
-- [ ] VLAN plan updated in `network/vlan-plan.md`
-- [ ] Trust-zone matrix updated in `security/segmentation.md`
+- [x] VLAN plan updated in `network/vlan-plan.md`
+- [x] Trust-zone model documented in `security/segmentation.md`
 
 ---
 
-## Phase 3 — Switching & Layer 2 Integration
+## Phase 3 — Switching & Layer 2 Integration (In Progress)
 
 **Objective:** Ensure segmentation is preserved at the switch level.
 
 ### Switch Configuration
+- [x] Managed switch identified and documented
 - [ ] Trunk ports explicitly defined and documented
 - [ ] Access ports assigned to correct VLANs
 - [ ] No unused ports left active
@@ -63,20 +69,20 @@ Each phase builds on the previous one. A phase is considered **complete only whe
 ### Layer 2 Security
 - [ ] No VLAN hopping paths exist
 - [ ] Management interfaces are not exposed to user VLANs
-- [ ] Switch management access restricted to MGMT VLAN
+- [ ] Switch management access restricted to MGMT VLAN (planned)
 
 ### Validation Evidence
 - [ ] Port maps documented in `network/switching/port-maps.md`
-- [ ] Switch overview updated with VLAN strategy
+- [x] Switch overview documented with VLAN strategy
 
 ---
 
-## Phase 4 — Compute & Virtualization Platform
+## Phase 4 — Compute & Virtualization Platform (Not Yet Active)
 
 **Objective:** Ensure compute resources do not weaken network or access controls.
 
 ### Host Security
-- [ ] Host OS hardened (baseline settings applied)
+- [ ] Host OS hardened with baseline settings
 - [ ] Management interfaces restricted to MGMT VLAN
 - [ ] Unused services disabled
 
@@ -91,7 +97,7 @@ Each phase builds on the previous one. A phase is considered **complete only whe
 
 ---
 
-## Phase 5 — Core Services & Platform Enablement
+## Phase 5 — Core Services & Platform Enablement (Planned)
 
 **Objective:** Ensure foundational services are secure, observable, and recoverable.
 
@@ -106,8 +112,8 @@ Each phase builds on the previous one. A phase is considered **complete only whe
 - [ ] Alerting exists for failures or anomalies
 
 ### Resilience
-- [ ] Backups are configured for critical services
-- [ ] Restore procedure documented (at least conceptually)
+- [ ] Backups configured for critical services
+- [ ] Restore procedures documented (minimum viable)
 
 ### Validation Evidence
 - [ ] Service records created in `services/`
@@ -115,7 +121,7 @@ Each phase builds on the previous one. A phase is considered **complete only whe
 
 ---
 
-## Phase 6 — Identity, Security & Access Control
+## Phase 6 — Identity, Security & Access Control (Planned)
 
 **Objective:** Enforce identity-aware access and reduce implicit privilege.
 
@@ -130,8 +136,8 @@ Each phase builds on the previous one. A phase is considered **complete only whe
 - [ ] Remote access requires authentication and encryption
 
 ### Logging & Audit
-- [ ] Authentication events are logged
-- [ ] Administrative actions are reviewable
+- [ ] Authentication events logged
+- [ ] Administrative actions reviewable
 
 ### Validation Evidence
 - [ ] Identity model documented in `access/`
@@ -139,7 +145,7 @@ Each phase builds on the previous one. A phase is considered **complete only whe
 
 ---
 
-## Phase 7 — Service Lifecycle & Environment Promotion
+## Phase 7 — Service Lifecycle & Environment Promotion (Planned)
 
 **Objective:** Ensure services are safe to promote beyond experimentation.
 
@@ -152,7 +158,7 @@ Each phase builds on the previous one. A phase is considered **complete only whe
 
 ### Change Discipline
 - [ ] Rollback plan documented
-- [ ] Change recorded in build journal
+- [ ] Change recorded in Build Journal
 - [ ] No undocumented configuration changes
 
 ### Validation Evidence
@@ -161,18 +167,18 @@ Each phase builds on the previous one. A phase is considered **complete only whe
 
 ---
 
-## Phase 8 — Advanced Workloads & Optimization
+## Phase 8 — Advanced Workloads & Optimization (Planned)
 
 **Objective:** Ensure high-performance workloads do not bypass controls.
 
 ### GPU & Remote Workstation
 - [ ] GPU access restricted to approved users
-- [ ] Remote workstation requires secure entry (VPN / identity)
-- [ ] No direct exposure of GPU host to untrusted networks
+- [ ] Remote workstation requires secure entry
+- [ ] No direct exposure of GPU hosts to untrusted networks
 
-### Performance vs Security Balance
+### Performance vs Security
 - [ ] Firewall rules reviewed for least privilege
-- [ ] Logging remains enabled despite performance tuning
+- [ ] Logging preserved despite performance tuning
 
 ### Validation Evidence
 - [ ] GPU workflow documented in `compute/gpu/`
@@ -180,20 +186,20 @@ Each phase builds on the previous one. A phase is considered **complete only whe
 
 ---
 
-## Phase 9 — Continuous Improvement & Expansion
+## Phase 9 — Continuous Improvement & Expansion (Ongoing)
 
 **Objective:** Maintain security posture as the lab evolves.
 
 ### Ongoing Validation
 - [ ] New hardware added to inventory
 - [ ] New services documented before exposure
-- [ ] Trust-zone matrix reviewed after changes
+- [ ] Trust-zone model reviewed after changes
 
 ### Security Hygiene
-- [ ] Periodic rule review performed
+- [ ] Periodic firewall rule review performed
 - [ ] Obsolete services removed
 - [ ] Documentation kept current
 
 ### Validation Evidence
-- [ ] Logs reflect evolution of the lab
+- [ ] Logs reflect lab evolution
 - [ ] Architecture documents updated as needed

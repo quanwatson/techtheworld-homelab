@@ -2,81 +2,106 @@
 
 ---
 
-## 2025-12-20 — Laptop Git + VS Code Setup Complete
+## 12-20-2025
 
+### HL-001
+**Activity:** Laptop Git + VS Code environment setup  
 **Device:** Laptop (remote network)  
-**Target Repo:** techtheworld-homelab  
-**Desktop Node:** Dell OptiPlex 3080 (offline)
+**Target Repo:** `techtheworld-homelab`  
+**Primary Node:** Dell OptiPlex 3080 (offline)
 
-### Actions Completed
-- Installed Git for Windows
-- Configured Git user identity
-- Authenticated with GitHub via Git Credential Manager
-- Cloned `techtheworld-homelab` repository locally
-- Opened repository in VS Code
-- Verified ability to edit files locally
-- Established GitHub as source of truth for cross-device sync
+**Actions:**  
+- Installed Git for Windows  
+- Configured Git user identity  
+- Authenticated to GitHub using Git Credential Manager  
+- Cloned `techtheworld-homelab` repository  
+- Opened repo in VS Code and validated edit capability  
+- Confirmed GitHub as the single source of truth  
 
-### Result
-Laptop is fully configured to:
-- Edit homelab documentation and files in VS Code
-- Commit and push changes to GitHub
-- Sync changes to the 3080 when it is powered on via `git pull`
+**Result:**  
+Laptop is fully operational for documentation edits, commits, and pushes. Changes can be synced to the 3080 via `git pull` when online.
 
-### Notes
-- 3080 auto-sync-on-boot to be configured later
-- This log establishes baseline workstation readiness
-
-<<<<<<< HEAD
-## 2025-12-20 — 3080 Repository Sync
-=======
-## 20251220 — 3080 Repository Sync
->>>>>>> 859a8c1c8a4ec77b44982bcfa30bf217c7da3eed
-
-**Device:** Dell OptiPlex 3080  
-**Action:** Pulled latest homelab repo from GitHub  
 **Notes:**  
-- Verified repo structure and logs synced correctly  
-- Environment aligned with laptop development workflow  
+- Auto-sync or scheduled pulls on the 3080 to be addressed later  
+- Establishes baseline mobile workstation readiness  
 
-<<<<<<< HEAD
-## 2025-12-21 — OptiPlex 3080 Session
+---
 
-**Session Type:** Repo maintenance + documentation alignment  
+### HL-002
+**Activity:** Repository sync on primary node  
+**Device:** Dell OptiPlex 3080  
+**Action:** Pulled latest repository state from GitHub  
+
+**Notes:**  
+- Verified folder structure and logs synced correctly  
+- Confirmed environment parity with laptop  
+- No merge conflicts encountered  
+
+**Result:**  
+Primary node aligned with remote repository state.
+
+---
+
+## 12-21-2025
+
+### HL-003
+**Activity:** OptiPlex 3080 documentation session  
+**Device:** Dell OptiPlex 3080  
+**Session Type:** Repo maintenance and documentation alignment  
 
 **Actions:**  
 - Verified Git remote configuration  
-- Confirmed branch status (`main` aligned with origin)  
+- Confirmed `main` branch aligned with `origin/main`  
 - Staged all changes using `git add -A`  
 - Updated network topology documentation  
 - Added VLAN planning document  
-- Added repo workflow playbook  
-- Re-established build step tracking  
+- Added repository workflow playbook  
+- Reconfirmed active build step alignment  
 
-**Outcome:**  
-Repository structure and documentation now support clean continuation across devices.
+**Result:**  
+Repository structure and documentation support clean continuation across devices.
 
-## 2025-12-21 — Cross-Device Continuity Check
+---
 
-**Context:**  
-Transitioned from primary OptiPlex 3080 system to secondary laptop.
+### HL-004
+**Activity:** Cross-device continuity validation  
+**Context:** Transition between OptiPlex 3080 and laptop  
 
 **Notes:**  
-- Confirmed repo is the single source of truth  
-- Identified risk of losing notes when changes are not committed  
-- Reinforced habit: commit documentation immediately after meaningful changes  
+- Confirmed GitHub as authoritative state holder  
+- Identified risk of losing notes when changes are not committed promptly  
+- Reinforced practice: commit documentation immediately after meaningful changes  
 
-**Outcome:**  
-Improved discipline for cross-device homelab work.
+**Result:**  
+Improved operational discipline for multi-device homelab work.
 
-=======
-## 2025-12-20 — Repository Convergence Completed
+---
 
+## 12-22-2025
+
+### HL-005
+**Activity:** Repository continuity after relocation  
 **Device:** Dell OptiPlex 3080  
-**Action:** Aligned local repository structure with GitHub  
+
+**Actions:**  
+- Verified repository state after directory relocation  
+- Confirmed successful reattachment to GitHub remote  
+- Validated local and remote parity  
+
+**Result:**  
+Operational continuity restored with no loss of documentation.
+
+## 12-22-2025
+
+### HL-006
+**Session Focus:** Documentation consolidation and repo readiness  
+
 **Notes:**  
-- Confirmed folder tracking behavior  
-- Pushed canonical structure  
-- Verified cross-device consistency
->>>>>>> 859a8c1c8a4ec77b44982bcfa30bf217c7da3eed
+- Consolidated and aligned security, firewall, segmentation, and validation documents  
+- Updated root README to reflect actual repo structure and navigation guidance  
+- Verified logs, playbooks, and runbooks align with current lab phase  
+- Confirmed no live infrastructure changes occurred during this session  
+
+**Outcome:**  
+Repository is clean, consistent, and ready for continued build-out without ambiguity.
 
