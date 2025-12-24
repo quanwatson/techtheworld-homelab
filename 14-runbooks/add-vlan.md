@@ -36,6 +36,16 @@ This runbook prioritizes **household connectivity stability** and **one-layer-at
 - **Client Test Port:** switch port ___
 - **Trunk Port to pfSense:** switch port ___
 
+- **New VLAN ID:** VLAN 20
+- **VLAN Name:** IOT
+- **Subnet:**192.168.20.0/24
+- **Gateway:** 192.168.20.1
+- **DHCP Range:** 192.168.20.100 – 192.168.20.199
+- **Purpose / Zone:** iOT devices
+- **Client Test Port:** switch port 7
+- **Trunk Port to pfSense:** switch port GiB 0/1
+
+
 ---
 
 ## Step 1 — Document the Change (Change Control)
