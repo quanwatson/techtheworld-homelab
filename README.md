@@ -8,7 +8,7 @@
 This repository documents a **home-based, enterprise-style homelab** designed as a
 **technology integration, solution validation, and professional skills development environment**.
 
-Although physically located at home, this lab is intentionally designed and operated
+Although physically living on a home network, this lab is intentionally designed and operated
 to mirror **real enterprise and MSP environments**, with an emphasis on
 documentation, security boundaries, change control, and lifecycle thinking.
 
