@@ -207,3 +207,104 @@ Installed pfSense CE 2.8.1 on dedicated firewall hardware. Initial setup perform
 
 **Status:** Baseline locked  
 **Next Step:** Resume physical switch configuration and VLAN enforcement (Phase 3)
+
+## 12-23-2025
+
+### BJ-018
+**Change:** Switch management plane secured under legacy IOS constraints  
+
+**Notes:**  
+- Cisco Catalyst 3560-8PC reset and integrated into LAB network  
+- Management interface reachable on VLAN 10 (LAB) with DHCP-assigned IP `192.168.10.101`  
+- Confirmed IOS 12.2(35)SE IPBASE image lacks crypto support (no SSH / HTTPS / RSA)  
+- HTTP management server explicitly disabled  
+- VTY access locked down to prevent Telnet exposure  
+- Management access limited to physical console only  
+
+**Impact:**  
+- No production services affected  
+- Switch management hardened within platform limitations  
+
+**Status:** Management plane stabilized and secured  
+**Next Step:** Finalize port roles, disable unused interfaces, and prepare MGMT VLAN (VLAN 30)
+
+## 12-23-2025
+
+### BJ-019  
+**Change:** Layer 2 VLAN enforcement validated (LAB baseline)
+
+**Notes:**  
+- Confirmed **VLAN 10 (LAB)** as active management + lab device network  
+- Verified switch management strategy:
+  - Management isolated to **VLAN 10**
+  - **VLAN 1 not used** for management
+  - **VLAN 999 designated as native / disabled-port VLAN**
+  - Console retained as out-of-band recovery path  
+- Validated trunk and access configuration:
+  - `Gi0/1` configured as **802.1Q trunk**
+    - Allowed VLANs: **10**
+    - Native VLAN: **999**
+  - `Fa0/8` configured as **access VLAN 10**
+    - Connected device: **OptiPlex 3080 (LAB workstation)**
+  - `Fa0/1–7` administratively **shutdown** and assigned to **VLAN 999**  
+- Confirmed end-to-end LAB connectivity:
+  - OptiPlex received IP `192.168.10.100/24`
+  - Default gateway `192.168.10.1` (pfSense LAB interface)
+  - Switch management IP reachable at `192.168.10.101`
+- Verified no unintended inter-VLAN access
+- No additional VLANs activated beyond VLAN 10 (per roadmap lock)
+
+**Validation Evidence:**  
+- `show interfaces trunk` confirms:
+  - Native VLAN: 999
+  - Allowed VLANs: 10  
+- `show ip interface brief` confirms:
+  - VLAN 1 unassigned
+  - Management reachable via VLAN 10  
+- Client IP configuration confirms correct LAB addressing and gateway
+
+**Impact:**  
+- LAB network now enforced at Layer 2  
+- Management plane isolated from default VLANs  
+- Reduced attack surface by disabling unused switch ports  
+
+**Status:** LAB VLAN enforcement complete and stable  
+**Next Step:**  
+- Disable unused trunk VLANs explicitly  
+- Prepare **MGMT VLAN (VLAN 30)** design (no deployment yet)  
+- Begin Phase 3: switch hardening + port role documentation
+
+## 12-23-2025
+
+### BJ-020
+**Change:** Phase 3 switch hardening planned (access-layer protections)
+
+**Notes:**  
+- Reviewed current switch state to confirm:
+  - VLAN 10 (LAB) is enforced and stable
+  - Management plane isolated and secured
+  - Trunk configuration locked and validated
+- Identified Phase 3 hardening scope limited to **access ports only**
+- Selected hardening controls compatible with **IOS 12.2(35)SE IPBASE**:
+  - BPDU Guard on endpoint-facing ports
+  - Storm Control with conservative thresholds
+  - Explicit interface documentation
+- Confirmed no overlap with previously completed actions:
+  - VLAN enforcement completed under BJ-019
+  - Management plane controls completed under BJ-018
+- Confirmed no SSH, HTTPS, or crypto-based controls available on platform
+
+**Planned Controls:**  
+- Enable `spanning-tree portfast` and `bpduguard` on access ports  
+- Apply storm-control limits for broadcast, multicast, and unicast traffic  
+- Preserve trunk (`Gi0/1`) and management VLAN configuration unchanged  
+- Maintain console-only access as recovery path  
+
+**Risk Assessment:**  
+- Low risk (access-port scoped)  
+- No expected impact to LAB connectivity or management plane  
+- Changes fully reversible via console  
+
+**Status:** Phase 3 hardening approved, execution pending  
+**Next Step:** Apply access-layer hardening to LAB access ports and validate behavior
+git

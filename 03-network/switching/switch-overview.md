@@ -14,11 +14,13 @@ This is **design and intent documentation**, not live configuration output.
 ## Management Strategy
 - Switch management is isolated to VLAN 10
 - VLAN 1 is not used for management
+- VLAN 999 is used for disabled ports
 - Console access retained as out-of-band recovery
 
 ## VLAN Strategy (Design)
 - VLAN 10 — LAB (management and lab devices)
 - VLAN 20 — IOT (planned)
 - VLAN 30 — MGMT (planned, future)
+- VLAN 999 — Native VLAN(disabled ports)
 
 No trunking or access port enforcement has been applied yet.
