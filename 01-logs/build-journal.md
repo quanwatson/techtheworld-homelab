@@ -274,7 +274,7 @@ Installed pfSense CE 2.8.1 on dedicated firewall hardware. Initial setup perform
 - Prepare **MGMT VLAN (VLAN 30)** design (no deployment yet)  
 - Begin Phase 3: switch hardening + port role documentation
 
-## 12-23-2025
+## 12-29-2025
 
 ### BJ-020
 **Change:** Phase 3 switch hardening planned (access-layer protections)
@@ -305,6 +305,46 @@ Installed pfSense CE 2.8.1 on dedicated firewall hardware. Initial setup perform
 - No expected impact to LAB connectivity or management plane  
 - Changes fully reversible via console  
 
-**Status:** Phase 3 hardening approved, execution pending  
-**Next Step:** Apply access-layer hardening to LAB access ports and validate behavior
-git
+**Status:** Phase 3 hardening plan approved (no changes applied)
+**Next Step:** Apply access-port hardening controls and capture validation evidence (BJ-021)
+
+## 12-30-2025
+
+### BJ-021
+**Change:** Phase 3 switch hardening validated (execution already completed)
+
+**Notes:**  
+- Confirmed Phase 3 access-layer hardening had already been executed prior to formal execution entry  
+- Validated all controls against Cisco IOS 12.2(35)SE IPBASE constraints  
+- No additional configuration changes applied during this session  
+
+**Validated Controls:**  
+- Access ports hardened only (no trunk impact)
+  - `spanning-tree portfast` enabled on access ports
+  - `bpduguard` enabled on access ports
+  - Storm control applied with conservative thresholds
+  - Err-disable behavior verified as expected on violation  
+- Trunk interface (`Gi0/1`) preserved:
+  - No PortFast
+  - No BPDU Guard
+  - VLAN enforcement unchanged (native VLAN 999, allowed VLAN 10 only)
+- Management plane unchanged:
+  - Console-only recovery access retained
+  - VLAN 10 remains management VLAN
+  - VLAN 1 remains unused
+- No crypto, SSH, or HTTPS features attempted (platform limitation respected)
+
+**Validation Evidence:**  
+- `show interfaces trunk` confirms VLAN enforcement unchanged  
+- `show spanning-tree summary` confirms PortFast active on edge ports only  
+- Storm control verified on access interfaces  
+- No err-disabled interfaces observed during normal operation  
+
+**Impact:**  
+- No service interruption  
+- No topology changes  
+- Switch hardening confirmed stable  
+
+**Status:** Phase 3 (Switch Hardening) COMPLETE  
+**Next Step:** Advance to Phase 4 — Service Enablement (Proxmox + Core Services)
+
