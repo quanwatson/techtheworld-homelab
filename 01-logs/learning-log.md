@@ -130,10 +130,11 @@ Stacking Layer 2 and Layer 3 changes simultaneously increases ambiguity when fai
 **Professional relevance:**  
 This mirrors best practices used in production networks where change isolation is critical for fault attribution and rollback.
 
+---
+
 ## 12-23-2025
 
 ### LL-005
-**Date:** 12-22-2025  
 **Topic:** Documentation as a control plane, not a byproduct  
 
 **What I Learned:**  
@@ -145,5 +146,83 @@ This mirrors enterprise environments where documentation, not memory, governs sy
 **Applied Going Forward:**  
 - No infrastructure change without corresponding documentation updates  
 - Documentation reviewed before implementation, not after  
-- README and validation checklists treated as gating artifacts
+- README and validation checklists treated as gating artifacts  
 
+---
+
+## 12-30-2025
+
+### LL-006
+**Topic:** Access-layer protections validated through real traffic failure  
+
+**What I learned:**  
+- Storm control is a **protective shutdown mechanism**, not traffic shaping  
+- Err-disabled is a *safe failure state*, not an error condition  
+- Access-layer protections correctly contained a traffic event to a single endpoint  
+- Physical link lights going dark is expected behavior during err-disable  
+
+**Key concepts internalized:**  
+- **Storm Control:** Protects switch fabric by disabling ports exceeding traffic thresholds  
+- **Err-disabled:** Intentional defensive state requiring manual or timed recovery  
+- **Edge port design:** Endpoint-facing ports must assume hostile or misbehaving traffic  
+- **Blast radius containment:** Proper Layer 2 design prevents lateral impact  
+
+**Applied in the lab:**  
+- Observed legitimate torrent traffic trigger storm-control on `Fa0/8`
+- Verified err-disable reason and recovery behavior
+- Manually recovered port via console
+- Preserved security thresholds without rollback
+- Confirmed trunk and management planes remained unaffected  
+
+**Professional relevance:**  
+- Mirrors real-world enterprise incidents involving broadcast storms and misbehaving endpoints  
+- Demonstrates ability to diagnose, explain, and recover from Layer 2 protection events  
+- Reinforces importance of conservative defaults during early service enablement  
+
+**Outcome:**  
+- Increased confidence in switch hardening decisions  
+- Validated Phase 3 controls under real-world conditions  
+- Ready to design services with awareness of access-layer enforcement  
+
+**Next Focus:**  
+- Phase 4: Proxmox deployment and core service enablement  
+- Designing services that respect Layer 2 security boundaries  
+ 
+ ## YYYYMMDD
+
+### LL-007
+**Topic:** Certificates, PKI, and Certificate Authorities (Security Foundations)
+
+**What I learned:**
+- A **digital certificate** is a digital identity used to prove authenticity and enable encrypted communication.
+- Certificates contain a public key, identity information, issuer details, expiration date, and a digital signature.
+- Certificates are used for HTTPS, VPNs, 802.1X authentication, internal services, and Zero Trust security models.
+- A **private key** never leaves the device and proves ownership of the certificate.
+- A **Certificate Authority (CA)** is a trusted entity that issues and signs certificates.
+- **PKI (Public Key Infrastructure)** is the full system that manages certificates, trust, issuance, renewal, and revocation.
+- Certificate trust is built using a **chain of trust** (Root CA → Intermediate CA → End Certificate).
+- Public CAs are trusted globally (browsers, public websites).
+- Internal CAs are used inside organizations for VPNs, device auth, internal HTTPS, and enterprise security.
+- Most enterprise and MSP environments rely on an internal CA for secure authentication and segmentation.
+
+**Missed Questions – Corrections & Learning Points:**
+- **EtherChannel (LACP):**
+  - Correct command: `channel-group <number> mode active`
+  - Learning point: LACP active mode actively negotiates link aggregation.
+- **OSPF Priority:**
+  - Correct priority for Designated Router: **255**
+  - Learning point: Higher OSPF priority wins; priority `0` means the router will never become DR.
+
+**Key Concepts Internalized:**
+- Certificates = digital ID cards
+- CA = trusted notary
+- PKI = trust infrastructure
+- Security is built on identity and trust, not just firewalls
+
+**Relevance to Homelab:**
+- Required for VPN authentication
+- Required for 802.1X and RADIUS
+- Required for secure internal services (pfSense, Proxmox, dashboards)
+- Foundation for enterprise-grade network design
+
+**Status:** Concepts understood; ready to design internal CA architecture

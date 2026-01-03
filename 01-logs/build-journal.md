@@ -348,3 +348,67 @@ Installed pfSense CE 2.8.1 on dedicated firewall hardware. Initial setup perform
 **Status:** Phase 3 (Switch Hardening) COMPLETE  
 **Next Step:** Advance to Phase 4 — Service Enablement (Proxmox + Core Services)
 
+## 12-30-2025
+
+### BJ-022
+**Change:** Storm-control enforcement validated via real traffic event
+
+**Notes:**  
+- Access port `Fa0/8` (LAB_ACCESS_OPTIPLEX) entered `err-disabled` state due to **storm-control**  
+- Event triggered by sustained high-throughput traffic from a legitimate torrent download  
+- Physical link lights disabled as expected upon err-disable condition  
+- Confirmed switch behavior aligns with intended Phase 3 hardening design  
+
+**Validation Evidence:**  
+- `show interfaces status err-disabled` confirms:
+  - Interface: `Fa0/8`
+  - Reason: `storm-control`  
+- `show errdisable recovery` confirms:
+  - Storm-control recovery disabled by default  
+  - Manual recovery required (as designed)  
+
+**Response Actions:**  
+- Port manually recovered using `shutdown / no shutdown`  
+- Storm-control thresholds preserved (no relaxation applied)  
+- No impact to trunk (`Gi0/1`), management VLAN, or other access ports  
+
+**Impact:**  
+- Single-port containment verified  
+- No lateral impact across VLANs or switch fabric  
+- Demonstrated effectiveness of access-layer protections under real-world load  
+
+**Status:** Storm-control protection confirmed operational  
+**Next Step:**  
+- Decide whether to enable timed errdisable auto-recovery  
+- Proceed to Phase 4: Proxmox host deployment and service enablement
+
+## 12-30-2025
+
+### BJ-023
+**Change:** Phase 4.1 completed — Domain, DNS, and identity control plane locked
+
+**Notes:**  
+- Finalized domain architecture:
+  - External domain: `techtheworld.win` (Cloudflare-managed)
+  - Internal AD domain: `corp.techtheworld.win`
+- Confirmed Cloudflare as authoritative external DNS provider
+- Defined DNS responsibility boundaries:
+  - Cloudflare → public records only
+  - Internal DNS → AD-integrated, private resolution
+- Established identity and trust design principles:
+  - Windows Server to provide Active Directory and core identity services
+  - Linux-first approach for internal services and platforms
+- Selected certificate strategy:
+  - **Internal Certificate Authority** as long-term trust model
+  - Temporary self-signed certificates permitted only for early bootstrap
+  - Centralized trust distribution planned for Windows and Linux systems
+- Confirmed no compute or services deployed during this phase
+- All decisions documented prior to Proxmox installation
+
+**Impact:**  
+- No infrastructure changes
+- Control plane fully designed and documented
+- Reduced future rework by locking identity, DNS, and trust strategy early
+
+**Status:** Phase 4.1 COMPLETE  
+**Next Step:** Begin Phase 4.2 — Compute substrate deployment (Proxmox installation and host networking)
