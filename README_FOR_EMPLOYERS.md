@@ -5,9 +5,6 @@
 This HomeLab is a deliberately designed, hands-on environment used to develop and validate real-world skills in **networking, systems administration, security, and solution design**.  
 It emphasizes **structured thinking, disciplined documentation, and phase-gated execution**, mirroring how infrastructure is designed and operated in professional IT, MSP, and enterprise environments.
 
-For a high-level orientation to the repository structure and how to navigate it, start here:  
-➡️ **[`00-overview/overview.md`](./00-overview/overview.md)**
-
 ---
 
 Thank you for taking the time to review this repository.  

@@ -6,7 +6,6 @@ This repository documents a deliberately designed HomeLab used to develop and va
 
 The lab is built and operated using **documentation-first, phase-gated execution**, mirroring how infrastructure is designed, implemented, and maintained in professional IT, MSP, and enterprise environments.
 
-➡️ **Start here:** [`00-overview/overview.md`](./00-overview/overview.md)
 
 ---
 
