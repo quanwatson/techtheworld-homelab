@@ -412,3 +412,43 @@ Installed pfSense CE 2.8.1 on dedicated firewall hardware. Initial setup perform
 
 **Status:** Phase 4.1 COMPLETE  
 **Next Step:** Begin Phase 4.2 — Compute substrate deployment (Proxmox installation and host networking)
+
+## 1-5-2026
+
+### BJ-024
+**Change:** Re-tuned access port after repeat err-disable event (Fa0/8)
+
+**Notes:**  
+- **Fa0/8** entered an **err-disabled** state again during sustained, legitimate high-throughput traffic (legal torrenting + multiplayer gaming).
+- This occurred after Phase 3 hardening, confirming that the previous storm-control and BPDU Guard settings were still too aggressive for this specific endpoint’s traffic profile.
+- Event validated the effectiveness of hardening controls while also highlighting the need for **port-specific tuning**.
+
+**Actions Taken:**  
+- Manually recovered **Fa0/8** from err-disabled state  
+- Further relaxed **storm-control thresholds** on Fa0/8 only  
+- Disabled **BPDU Guard** on Fa0/8 only (retained on all other access ports)  
+- Left PortFast behavior unchanged  
+- Verified no changes were made to:
+  - Trunk interface (`Gi0/1`)
+  - Management plane
+  - Other access ports
+  - VLAN enforcement  
+
+**Validation:**  
+- Sustained torrent traffic verified without err-disable events  
+- Concurrent gaming traffic verified stable  
+- No broadcast storms or unintended traffic observed  
+- Switch stability and management access confirmed  
+
+**Impact:**  
+- Endpoint stability restored under real-world load  
+- Switch hardening posture preserved globally  
+- No impact to LAB VLAN, trunk configuration, or household connectivity  
+
+**Risk Assessment:**  
+- Low risk  
+- Change scoped to a single, known high-throughput endpoint  
+- Fully reversible via console  
+
+**Status:** Port stabilized after repeat event; configuration now aligned with real traffic patterns
+
