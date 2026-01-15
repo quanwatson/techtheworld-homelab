@@ -188,7 +188,7 @@ This mirrors enterprise environments where documentation, not memory, governs sy
 - Phase 4: Proxmox deployment and core service enablement  
 - Designing services that respect Layer 2 security boundaries  
  
- ## YYYYMMDD
+ ## 1-03-2026
 
 ### LL-007
 **Topic:** Certificates, PKI, and Certificate Authorities (Security Foundations)
@@ -226,3 +226,53 @@ This mirrors enterprise environments where documentation, not memory, governs sy
 - Foundation for enterprise-grade network design
 
 **Status:** Concepts understood; ready to design internal CA architecture
+
+## 01-07-2026
+
+### LL-008
+**Topic:** Infrastructure port profiles, hypervisor behavior, and hardening trade-offs
+
+**What I learned:**  
+- Hypervisors behave differently from endpoints at the network edge:
+  - Link flaps during install, reboots, and bridge initialization are normal
+  - Aggressive access-port protections can falsely interpret this behavior as faults
+- Port hardening must be **role-aware**, not one-size-fits-all:
+  - Endpoint ports (desktops, gaming, torrent traffic) need different tuning
+  - Infrastructure ports (hypervisors, servers) require stability over strict enforcement
+- Storm control and BPDU Guard are *protective*, not punitive:
+  - They did exactly what they were designed to do
+  - The failure was not the control — it was applying the wrong profile to the wrong role
+- Disabling protections globally is not the solution:
+  - Creating **documented port profiles** preserves security intent while enabling function
+- Documentation-first execution prevented a “guess-and-fix” spiral:
+  - Logs made it clear *why* the port was disabled
+  - Recovery was deliberate, not reactive
+
+**Key concepts internalized:**  
+- **Role-based port design:** Access ≠ high-throughput ≠ infrastructure  
+- **False positives vs real faults:** Not all err-disable events indicate bad actors  
+- **Change intent matters:** If behavior is expected, controls must reflect that intent  
+- **Hypervisor networking:** Bridges, reinitialization, and MAC learning can trigger L2 controls  
+- **Security as calibration:** Good security is tuned, not maximal
+
+**Applied in the lab:**  
+- Differentiated three access port profiles:
+  - Standard Access Port
+  - High-Throughput Endpoint Port
+  - Hypervisor / Infrastructure Port
+- Corrected Fa0/7 configuration to match hypervisor behavior
+- Restored and stabilized Proxmox management access on VLAN 10
+- Preserved trunk, VLAN, and management-plane integrity
+- Reinforced console-first recovery discipline
+
+**Why this matters professionally:**  
+- Mirrors real-world data center and enterprise switch design decisions  
+- Demonstrates understanding of *why* controls exist, not just how to enable them  
+- Shows ability to balance security, stability, and operational reality  
+- Prevents cargo-cult hardening that causes unnecessary outages  
+
+**Outcome:**  
+- Proxmox hypervisor integrated cleanly into LAB network  
+- Switch hardening remains intact and intentional  
+- Networking decisions now driven by **device role**, not defaults  
+- Increased confidence operating at infrastructure and platform layers

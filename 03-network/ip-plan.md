@@ -38,6 +38,7 @@ Only **implemented networks** are treated as active. Planned ranges are explicit
 |---------------------|-------------------|-------------------------------|
 | pfSense (VLAN 10)   | 192.168.10.1      | Homelab gateway               |
 | switchOTS           | 192.168.10.101    | Switch management (DHCP)      |
+| proxmox       | 192.168.10.104    | web UI   |
 
 > Static reservations for lab hosts will be added after switch-side VLAN enforcement is complete.
 

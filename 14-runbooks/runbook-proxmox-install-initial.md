@@ -38,11 +38,11 @@ This runbook **does not deploy any services** — it only prepares the host.
 - **Hostname:** `pve01`
 - **Domain:** `corp.techtheworld.win`
 - **Management VLAN:** VLAN 10 (LAB)
-- **Management IP:** `192.168.10.___`
+- **Management IP:** `192.168.10.104`
 - **Gateway:** `192.168.10.1`
 - **DNS Server:** `192.168.10.1` (pfSense for now)
-- **Time Zone:** __________
-- **Admin Email:** __________
+- **Time Zone:** CST
+- **Admin Email:** admin@techtheworld.win
 
 ---
 
@@ -86,7 +86,7 @@ Before touching hardware:
 2. Enter admin email
 3. Configure management network:
    - Interface: primary NIC
-   - IP Address: `192.168.10.___`
+   - IP Address: `192.168.10.111`
    - Netmask: `/24`
    - Gateway: `192.168.10.1`
    - DNS: `192.168.10.1`

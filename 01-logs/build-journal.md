@@ -413,7 +413,7 @@ Installed pfSense CE 2.8.1 on dedicated firewall hardware. Initial setup perform
 **Status:** Phase 4.1 COMPLETE  
 **Next Step:** Begin Phase 4.2 — Compute substrate deployment (Proxmox installation and host networking)
 
-## 1-5-2026
+## 01-06-2026
 
 ### BJ-024
 **Change:** Re-tuned access port after repeat err-disable event (Fa0/8)
@@ -452,3 +452,117 @@ Installed pfSense CE 2.8.1 on dedicated firewall hardware. Initial setup perform
 
 **Status:** Port stabilized after repeat event; configuration now aligned with real traffic patterns
 
+### BJ-025
+**Change:** Proxmox host introduced to LAB network (initial integration)
+
+**Notes:**  
+- Designated **Fa0/7** as the dedicated **hypervisor infrastructure access port** for the Proxmox host  
+- Port 7 was previously **administratively disabled** as part of Phase 3 switch hardening  
+- Intentionally re-enabled port 7 for controlled infrastructure use  
+- Applied a **Hypervisor Port Profile** distinct from:
+  - Standard access ports
+  - High-throughput endpoint ports  
+
+**Hypervisor Port Profile Applied (Fa0/7):**  
+- Access mode, **VLAN 10 (LAB)**  
+- `spanning-tree portfast` enabled  
+- **BPDU Guard explicitly disabled** (hypervisor bridges generate BPDUs)  
+- **Storm control removed** to prevent false-positive port shutdown during:
+  - VM bridge initialization
+  - Proxmox network configuration
+- Port remains non-trunked (no VLAN tagging at switch level)
+
+**Design Intent:**  
+- Place Proxmox management and core infrastructure services on **VLAN 10** alongside:
+  - Existing management plane
+  - Control-plane services (Internal CA, DNS, Odoo, future AD)
+- Preserve strict separation between:
+  - Infrastructure ports (Fa0/7)
+  - High-throughput endpoints (Fa0/8)
+  - Disabled / unused ports (VLAN 999)
+
+**Validation Evidence:**  
+- Port 7 link restored intentionally after Phase 3 hardening  
+- Initial port drops correlated to storm-control and BPDU guard behavior  
+- Port stabilized after applying hypervisor-appropriate profile  
+- No err-disable events observed after correction  
+- No impact to:
+  - Existing LAB endpoints
+  - Switch management access
+  - Firewall or VLAN enforcement  
+
+**Impact:**  
+- Introduces first infrastructure server into the LAB network  
+- No impact to household network or existing endpoints  
+
+**Status:** Proxmox host physically integrated and port stabilized  
+**Next Step:** Install Proxmox VE and validate management access on VLAN 10
+
+## 1-14-2026
+### BJ-026
+**Change:** Proxmox storage architecture finalized (clean OS vs service separation)
+
+**Notes:**  
+- Finalized and executed disk + partition strategy for Proxmox host **before any VM deployment**
+- NVMe (238 GB) intentionally segmented:
+  - **64 GB** allocated to Proxmox VE OS (hypervisor only)
+  - Remaining NVMe capacity reserved exclusively for **core control-plane VMs and containers**
+- Confirmed SATA HDD usage model:
+  - **HDD 1 (1 TB):** Reserved for NAS VM backing storage (data-first workload)
+  - **HDD 2 (1 TB):**
+    - ~500 GB for VM OS disks (non-core / rebuildable workloads)
+    - ~500 GB for VM data disks (non-core services)
+- Storage decisions executed using Parted Magic to ensure:
+  - Deterministic layout
+  - Clean boundaries between OS, services, and data
+- Explicitly avoided:
+  - Monolithic root filesystem
+  - Mixing hypervisor OS with service disks
+  - Early VM creation before storage intent was locked
+
+**Validation Evidence:**  
+- Proxmox installed cleanly on 64 GB NVMe partition  
+- Web UI stable and accessible on VLAN 10  
+- NVMe remaining capacity visible and allocated for core datastore  
+- HDD datastores visible and correctly separated by intent  
+- No VMs or containers deployed prior to storage lock-in  
+
+**Impact:**  
+- No impact to existing LAB network or endpoints  
+- Establishes a clean, auditable, enterprise-aligned virtualization foundation  
+
+**Status:** Storage architecture locked and approved  
+**Next Step:**  
+- Snapshot baseline Proxmox state  
+- Create logical network topology checkpoint (Packet Tracer)  
+- Deploy first core VM (Internal CA)
+
+## 1-07-2026
+### BJ-027
+**Change:** Clean Proxmox reinstall performed to enforce finalized storage architecture
+
+**Notes:**  
+- Performed intentional Proxmox VE reinstall after NVMe was fully reformatted
+- Reinstall was required to:
+  - Correct early LVM layout assumptions
+  - Enforce clean separation between hypervisor OS and core service storage
+  - Avoid retrofitting storage decisions post-deployment
+- Reinstall executed *before* any VM or container creation
+- Enterprise repository disabled; community repository enabled
+- Host returned to a known-good, minimal baseline
+
+**Validation Evidence:**  
+- Proxmox boots cleanly with stable management access  
+- Storage layout reflects documented intent exactly  
+- No residual services, VMs, or legacy artifacts present  
+- Host ready for service-layer deployment  
+
+**Impact:**  
+- No disruption to LAB network or endpoints  
+- One-time corrective action to protect long-term maintainability  
+
+**Status:** Completed  
+**Next Step:**  
+- Snapshot baseline state  
+- Create current-state logical network topology (Packet Tracer)  
+- Begin Phase 5 with Internal CA deployment
