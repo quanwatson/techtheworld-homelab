@@ -566,3 +566,8 @@ Installed pfSense CE 2.8.1 on dedicated firewall hardware. Initial setup perform
 - Snapshot baseline state  
 - Create current-state logical network topology (Packet Tracer)  
 - Begin Phase 5 with Internal CA deployment
+
+## BJ-028 (Draft)
+Checkpoint reached — network + hypervisor stable.
+Paused before service deployment pending topology commit.
+ 
