@@ -1,7 +1,6 @@
 # pfSense Purpose and Role
 
-This document defines the purpose, scope, and boundaries of pfSense within the homelab.
-It exists to prevent role drift and accidental expansion beyond intended responsibility.
+What pfSense is actually responsible for here, and — just as important — what it isn't. This exists so scope doesn't quietly creep every time I think of a new feature to bolt on.
 
 ---
 
