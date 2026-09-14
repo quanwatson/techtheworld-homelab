@@ -30,10 +30,10 @@ No services are deployed during this runbook.
 
 ## Step 1 — Document Intended State (Change Control)
 Update documentation **before** making changes:
-- `network/topology.md`
-- `network/vlan-plan.md`
-- `compute/hypervisors.md`
-- `compute/storage.md`
+- `03-network/topology.md`
+- `03-network/vlan-plan.md`
+- `10-hardware/inventory/proxmox-host.md`
+- `10-hardware/standards/proxmox-storage-naming.md`
 
 If intent is not documented, stop.
 
