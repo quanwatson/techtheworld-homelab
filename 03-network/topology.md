@@ -1,7 +1,6 @@
 # Network Topology (Baseline)
 
-This document describes the baseline physical and logical topology of the homelab.  
-The design prioritizes isolation, safety, and realism for enterprise-style testing while operating inside a home network.
+This is the baseline physical and logical topology of the homelab — built to prioritize isolation and safety first, realism second, while still living inside an actual household network.
 
 ---
 
@@ -97,6 +96,6 @@ The logical flow represents how traffic, trust, and services are intended to mov
 
 - **Double NAT is intentional** (home network upstream + pfSense NAT)
 - Protects household network from lab experimentation risk
-- Provides a safe sandbox for segmentation, firewalling, and enterprise-style testing
+- Gives me a sandbox to break segmentation and firewall rules without touching anything the household depends on
 
-This topology enables realistic network scenarios while maintaining home network stability.
+That trade-off — a bit of NAT ugliness in exchange for total isolation — is the whole point of this topology.

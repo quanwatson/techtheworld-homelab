@@ -1,7 +1,6 @@
 # Firewall and Routing Design
 
-This document describes the current firewall placement, interface roles, and security posture of the homelab.
-Design intent is separated from future enhancements to maintain accuracy.
+Current firewall placement, interface roles, and security posture. I keep "what's actually live" and "what's planned" clearly separated here — it's too easy to write down the intended design and forget it isn't real yet.
 
 ---
 
@@ -78,15 +77,8 @@ These controls are **design intent only** and not yet active:
 
 ---
 
-## Rationale
+## Why it's set up this way
 
-This design:
-- Preserves household network stability
-- Allows safe experimentation with firewalling and segmentation
-- Enables clear fault isolation between home and lab
-- Mirrors real-world edge firewall placement used in small enterprise and MSP environments
+Household stability comes first, full stop. Beyond that, this gets me a place to actually experiment with firewalling and segmentation, clean fault isolation between home and lab, and an edge-firewall placement that isn't far off from what a small business or MSP client site would run.
 
-Changes to firewall rules, interfaces, or routing must be:
-- Validated in isolation
-- Documented prior to execution
-- Recorded in the Build Journal after completion
+Any change to firewall rules, interfaces, or routing gets validated in isolation, documented before it happens, and logged in the Build Journal once it's done.

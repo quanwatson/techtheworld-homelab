@@ -1,38 +1,16 @@
 # Security Model Overview
 
-The homelab security model is built on the principle that **network segmentation and identity must work together**.  
-Neither VLANs nor authentication alone are sufficient to establish trust.
+The short version: segmentation alone doesn't establish trust, and neither does authentication alone. This lab's security model leans on both together — where you are on the network and who you've proven you are.
 
 ---
 
-## Core Security Pillars
+## The three things doing the work
 
-### 1. Network Segmentation (Where You Are)
-- VLANs define **initial trust boundaries**
-- Devices are grouped by function and risk
-- Routing between VLANs is always explicit
-- No VLAN is trusted by default
+**Where you are — network segmentation.** VLANs set the initial trust boundary. Devices get grouped by function and risk, routing between VLANs is always explicit, and no VLAN gets trusted just because it exists. This is what limits blast radius if something gets compromised.
 
-Segmentation limits blast radius and reduces the impact of compromise.
+**Who you are — identity and authentication.** Identity decides who's actually allowed in. Directory accounts and service accounts provide accountability, privileged access is restricted to known identities, and authentication events get logged. This is what stops anonymous or uncontrolled access, which segmentation alone can't do.
 
----
-
-### 2. Identity & Authentication (Who You Are)
-- Identity determines **who is allowed access**
-- Directory services (domain accounts, service accounts) provide accountability
-- Privileged access is restricted to known identities
-- Authentication events are logged
-
-Identity prevents anonymous or uncontrolled access.
-
----
-
-### 3. Authorization & Policy (What You Can Do)
-- Firewall rules enforce **network-level authorization**
-- Role-based access control enforces **service-level authorization**
-- Management access is restricted to MGMT VLAN and approved identities
-
-Authorization ensures access is purposeful and minimal.
+**What you can do — authorization and policy.** Firewall rules handle network-level authorization; role-based access control handles it at the service level. Management access is locked to the MGMT VLAN plus approved identities. The goal is access that's purposeful and minimal, not access that's merely possible.
 
 ---
 
@@ -66,10 +44,6 @@ This model aligns with zero-trust principles:
 
 ---
 
-## Practical Outcomes
-- Compromise of one VLAN does not compromise the environment
-- Credentials alone are insufficient without network access
-- Network access alone is insufficient without identity
-- Security testing can be performed safely and realistically
+## What this buys me in practice
 
-This layered model enables enterprise-grade security experimentation while maintaining a controlled lab environment.
+Compromising one VLAN doesn't compromise the whole environment. Stolen credentials without network access get you nowhere, and network access without identity gets you nowhere either — you need both. Which also means I can actually run security testing here without it turning into a real incident.

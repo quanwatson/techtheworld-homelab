@@ -1,7 +1,6 @@
 # Planned VLAN Architecture
 
-The VLAN architecture defines logical trust zones within the lab network.  
-Each VLAN represents a distinct security boundary with **no implicit trust** between segments.
+This defines the logical trust zones in the lab network. Each VLAN is its own security boundary — nothing gets implicit trust just for being on the same switch.
 
 ---
 
@@ -25,4 +24,4 @@ Each VLAN represents a distinct security boundary with **no implicit trust** bet
 - No VLAN has implicit trust  
 - Access between VLANs is granted only where justified and documented  
 
-This model supports enterprise-style segmentation, security testing, and controlled service exposure.
+Nothing fancy here — it's just deny-by-default segmentation, done properly, so anything I add later has to earn its way through a rule instead of getting a free pass.
