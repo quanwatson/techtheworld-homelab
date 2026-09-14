@@ -1,141 +1,23 @@
 # Logs Overview
 
-## Purpose of This Directory
+`01-logs/` is the operational record for this lab — not informal notes, but the place that shows why decisions got made, not just what got configured. In a real shop this is what supports change management, incident response, and handing work off to someone else.
 
-The `/01-logs` directory contains the **authoritative operational record** of this HomeLab.
+Not everything gets logged. Only state changes, architecture decisions, or moments where I actually understood something new get written down — routine commands, exploratory clicking around, and small edits don't make the cut. That keeps the signal-to-noise ratio high enough that these logs are still worth reading a year from now.
 
-Logs are treated as **first-class system artifacts**, not informal notes.  
-They provide traceability, accountability, and insight into *why* decisions were made—not just *what* was configured.
+## What lives where
 
-This mirrors professional environments where logs support:
-- Change management
-- Incident response
-- Knowledge transfer
-- Audit and review
+**Build Journal** (`build-journal.md`) — the authoritative record of state changes: infrastructure changes, configuration milestones, phase transitions, validated outcomes. It does not include individual commands or minor edits. If you want to know what the lab currently looks like and how it got there, this is the file.
 
----
+**Change Control** (`change-control.md`) — planned or significant changes before they happen: design intent, risk assessment, rollback plan, and sign-off to proceed. This is the closest thing here to formal MSP/enterprise change management.
 
-## Logging Philosophy
+**Checklists** (`checklists.md`) — phase-gated execution control. Completion criteria, readiness checks, progress tracking. Its whole job is to stop me from jumping ahead of myself.
 
-Not all activity deserves to be logged.
+**Learning Log** (`learning-log.md`) — what I actually understood, not what I did. Concepts internalized, judgment refined by experience, cause and effect. If the build journal answers "what changed," this answers "what do I understand now that I didn't before."
 
-Only **state changes, architectural decisions, or meaningful learning moments** are recorded.  
-Routine commands, exploratory clicks, and minor edits are intentionally excluded.
+**Homelab Log** (`homelab-log.md`) — session-level continuity: what got worked on, environment notes, context for picking things back up. This is for continuity, not for auditing.
 
-This discipline keeps logs:
-- High signal
-- Reviewable
-- Professionally relevant
+**Session Notes** (`session-notes.md`) — short-lived working notes: temporary observations, scratch thoughts, things to formalize elsewhere later if they turn out to matter.
 
----
+## Why bother separating all this
 
-## Log Types & Intent
-
-### Build Journal (`build-journal.md`)
-**Purpose:**  
-Records **authoritative state changes** to the lab.
-
-**Includes:**
-- Infrastructure changes
-- Configuration milestones
-- Phase transitions
-- Validated outcomes
-
-**Does NOT include:**
-- Individual commands
-- Minor edits
-- Reversible experiments that did not alter state
-
-This file answers:  
-> *“What is the current state of the lab, and how did it get here?”*
-
----
-
-### Change Control (`change-control.md`)
-**Purpose:**  
-Tracks **planned or significant changes** before execution.
-
-**Includes:**
-- Design intent
-- Risk assessment
-- Rollback strategy
-- Approval to proceed
-
-This mirrors formal change management used in MSP and enterprise environments.
-
----
-
-### Checklists (`checklists.md`)
-**Purpose:**  
-Phase-gated execution control.
-
-**Includes:**
-- Phase completion criteria
-- Execution readiness checks
-- Progress tracking
-
-This file prevents premature execution and scope creep.
-
----
-
-### Learning Log (`learning-log.md`)
-**Purpose:**  
-Captures **understanding gained**, not steps performed.
-
-**Includes:**
-- Concepts internalized
-- Judgment refined through experience
-- Cause-and-effect understanding
-
-This file answers:  
-> *“What do I now understand that I didn’t before?”*
-
----
-
-### Homelab Log (`homelab-log.md`)
-**Purpose:**  
-Session-level continuity and context.
-
-**Includes:**
-- What was worked on during a session
-- Environmental notes
-- Context for resuming work later
-
-This file supports continuity, not auditing.
-
----
-
-### Session Notes (`session-notes.md`)
-**Purpose:**  
-Short-lived working notes.
-
-**Includes:**
-- Temporary observations
-- Scratch notes
-- Items to formalize later
-
-Content here is promoted to other logs only if it becomes meaningful.
-
----
-
-## Professional Relevance
-
-This logging structure demonstrates:
-- Change discipline
-- Operational maturity
-- Audit-ready documentation habits
-- Clear separation between execution, planning, and learning
-
-It reflects how infrastructure work is responsibly managed in production environments.
-
----
-
-## Summary
-
-Logs in this HomeLab are **intentional, scoped, and professional**.
-
-They exist to support:
-- Safe iteration
-- Clear reasoning
-- Knowledge transfer
-- Career-ready documentation artifacts
+Because a single giant notes file becomes useless fast. Splitting execution, planning, and learning apart is what makes this stuff reviewable months later — by me or by someone else — and it's the same separation of concerns that shows up in any team that actually manages infrastructure change well instead of just remembering it.

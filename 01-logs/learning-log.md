@@ -36,16 +36,9 @@
   - `/playbooks` (procedural references)
   - `/runbooks` (operational and incident guidance)
 
-**Why this matters professionally:**  
-- Mirrors real-world practices used in MSP, NOC, and infrastructure teams.
-- Demonstrates understanding of Git beyond basic command usage.
-- Produces reviewable artifacts that show technical growth and maturity.
-- Establishes habits that scale to teams, audits, and production systems.
+This is basically how MSP and NOC teams already work, I just didn't know it had a name. It's also the first sign this repo could double as a portfolio piece and not just a personal notes dump.
 
-**Outcome:**  
-- Laptop environment fully operational and synchronized with GitHub.
-- Documentation and logging standards established before further infrastructure changes.
-- Homelab now functions as both a technical platform and a professional portfolio.
+**Outcome:** Laptop environment fully operational and synced with GitHub. Documentation and logging standards established before I touched any actual infrastructure.
 
 ---
 
@@ -73,16 +66,9 @@
 - Pulled the unified structure to all secondary devices.
 - Designated the OptiPlex 3080 as the primary authoring and execution node.
 
-**Why this matters professionally:**  
-- Prevents configuration drift across environments.
-- Reflects how teams manage shared infrastructure repositories.
-- Demonstrates methodical debugging of tooling issues.
-- Reinforces disciplined environment control.
+This is the same problem teams hit when someone's local checkout quietly drifts from what's actually in source control — annoying at home, worse on a shared team repo.
 
-**Outcome:**  
-- All devices now share an identical, intentional repository structure.
-- GitHub accurately reflects the full homelab layout.
-- Future changes can be made without desynchronization risk.
+**Outcome:** All devices now share the same repo structure, and GitHub actually reflects it. No more guessing which machine has the "real" state.
 
 ---
 
@@ -104,11 +90,7 @@ The value of a homelab compounds when *decisions and state changes* are document
 - **Homelab Log:** Session-level activity and environment continuity  
 - **Learning Log:** Understanding gained and judgment refined  
 
-**Why this matters:**  
-- Enables faster troubleshooting
-- Makes rebuilds and audits possible
-- Trains enterprise-grade change management habits
-- Produces interview-ready documentation artifacts
+It makes troubleshooting faster, makes a rebuild or an audit actually possible, and it's the same discipline that shows up in enterprise change management — not a home-lab-only habit.
 
 ---
 
@@ -127,8 +109,7 @@ Stacking Layer 2 and Layer 3 changes simultaneously increases ambiguity when fai
 - One major network change per session.
 - Validate → document → then proceed.
 
-**Professional relevance:**  
-This mirrors best practices used in production networks where change isolation is critical for fault attribution and rollback.
+This is why production networks isolate changes the way they do — when something breaks, you want exactly one variable to have moved.
 
 ---
 
@@ -140,8 +121,7 @@ This mirrors best practices used in production networks where change isolation i
 **What I Learned:**  
 Well-structured documentation reduces cognitive load, prevents configuration drift, and acts as a control surface for infrastructure changes. Treating documentation as authoritative enables safer iteration, clearer rollback paths, and easier peer review.
 
-**Professional Relevance:**  
-This mirrors enterprise environments where documentation, not memory, governs system evolution. It also enables asynchronous review and handoff without loss of context.
+This is basically the difference between a system that runs on tribal knowledge and one that could survive me getting hit by a bus — or more realistically, forgetting why I made a decision six months ago.
 
 **Applied Going Forward:**  
 - No infrastructure change without corresponding documentation updates  
@@ -174,15 +154,9 @@ This mirrors enterprise environments where documentation, not memory, governs sy
 - Preserved security thresholds without rollback
 - Confirmed trunk and management planes remained unaffected  
 
-**Professional relevance:**  
-- Mirrors real-world enterprise incidents involving broadcast storms and misbehaving endpoints  
-- Demonstrates ability to diagnose, explain, and recover from Layer 2 protection events  
-- Reinforces importance of conservative defaults during early service enablement  
+This is a small-scale version of exactly the kind of incident an enterprise NOC deals with — a broadcast storm or a misbehaving endpoint getting contained instead of taking down a segment.
 
-**Outcome:**  
-- Increased confidence in switch hardening decisions  
-- Validated Phase 3 controls under real-world conditions  
-- Ready to design services with awareness of access-layer enforcement  
+**Outcome:** More confidence in the switch hardening decisions, Phase 3 controls validated under real conditions instead of just theory, and a better sense of how to design services that respect what the access layer is already enforcing.
 
 **Next Focus:**  
 - Phase 4: Proxmox deployment and core service enablement  
@@ -265,14 +239,6 @@ This mirrors enterprise environments where documentation, not memory, governs sy
 - Preserved trunk, VLAN, and management-plane integrity
 - Reinforced console-first recovery discipline
 
-**Why this matters professionally:**  
-- Mirrors real-world data center and enterprise switch design decisions  
-- Demonstrates understanding of *why* controls exist, not just how to enable them  
-- Shows ability to balance security, stability, and operational reality  
-- Prevents cargo-cult hardening that causes unnecessary outages  
+This is the difference between knowing *how* to turn on a control and knowing *why* it exists — which is what keeps hardening from turning into cargo-culting settings until something breaks and you have no idea which one to blame.
 
-**Outcome:**  
-- Proxmox hypervisor integrated cleanly into LAB network  
-- Switch hardening remains intact and intentional  
-- Networking decisions now driven by **device role**, not defaults  
-- Increased confidence operating at infrastructure and platform layers
+**Outcome:** Proxmox is cleanly integrated into the LAB network, switch hardening stays intact everywhere it should, and networking decisions are now driven by what a device actually is, not a one-size-fits-all default.

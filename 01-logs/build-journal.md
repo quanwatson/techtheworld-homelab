@@ -191,7 +191,7 @@ Installed pfSense CE 2.8.1 on dedicated firewall hardware. Initial setup perform
 
 ## 12-23-2025
 
-### BJ-017 
+### BJ-017
 **Change:** Documentation and governance baseline locked  
 
 **Notes:**  
@@ -207,8 +207,6 @@ Installed pfSense CE 2.8.1 on dedicated firewall hardware. Initial setup perform
 
 **Status:** Baseline locked  
 **Next Step:** Resume physical switch configuration and VLAN enforcement (Phase 3)
-
-## 12-23-2025
 
 ### BJ-018
 **Change:** Switch management plane secured under legacy IOS constraints  
@@ -498,7 +496,7 @@ Installed pfSense CE 2.8.1 on dedicated firewall hardware. Initial setup perform
 **Status:** Proxmox host physically integrated and port stabilized  
 **Next Step:** Install Proxmox VE and validate management access on VLAN 10
 
-## 1-14-2026
+## 01-07-2026
 ### BJ-026
 **Change:** Proxmox storage architecture finalized (clean OS vs service separation)
 
@@ -537,7 +535,7 @@ Installed pfSense CE 2.8.1 on dedicated firewall hardware. Initial setup perform
 - Create logical network topology checkpoint (Packet Tracer)  
 - Deploy first core VM (Internal CA)
 
-## 1-07-2026
+## 01-14-2026
 ### BJ-027
 **Change:** Clean Proxmox reinstall performed to enforce finalized storage architecture
 

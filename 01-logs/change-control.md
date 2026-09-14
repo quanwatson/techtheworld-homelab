@@ -1,6 +1,6 @@
 ## CC-001 — Phase 4 Control Plane Foundation (Proxmox + Services)
 
-**Date:** 2025-01-XX  
+**Date:** 2025-12-30  
 **Change ID:** CC-001  
 **Phase:** Phase 4 — Service Control Plane & Virtualization  
 **Requested By:** Quan Watson  
@@ -89,7 +89,7 @@ This change intentionally pauses execution to ensure documentation quality, audi
 
 ## CC-002 — Proxmox Host Introduction (pve01)
 
-**Date:** 2025-01-XX  
+**Date:** 2026-01-06  
 **Change ID:** CC-002  
 **Phase:** Phase 4 — Service Control Plane & Virtualization  
 **Requested By:** Quan Watson  

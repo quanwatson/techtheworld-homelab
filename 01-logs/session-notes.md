@@ -1,9 +1,6 @@
 # Session Notes
 
-## Purpose
-Session Notes capture **ephemeral context**, working assumptions, and in-progress focus for a given work session.  
-They are not authoritative records of change (Build Journal) or learning (Learning Log).  
-Think of this log as a **scratchpad with intent**—useful during momentum, disposable once decisions are finalized elsewhere.
+This is where in-progress context lives — working assumptions, what I was mid-thought on, stuff that matters for the next hour but not necessarily for the historical record. It's not the Build Journal and it's not the Learning Log; think of it as a scratchpad with intent. Once something here turns into an actual decision or a real change, it gets promoted to one of those files and can drop out of here.
 
 ---
 
