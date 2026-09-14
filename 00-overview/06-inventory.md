@@ -1,61 +1,23 @@
 # Inventory Overview
 
-## Purpose of This Document
+This is a quick, human-readable snapshot of the core assets in the lab. Serials, detailed specs, and lifecycle data live separately under `10-hardware/inventory/` — this file is meant to be the summary view, the same way an executive summary and a detailed asset database serve different purposes in a real IT shop.
 
-This document provides a **high-level inventory snapshot** of core HomeLab assets.
+## Domains
+- External domain: `techtheworld.win`
+- Internal namespace: `corp.techtheworld.win`
 
-It is intentionally concise and human-readable.  
-Detailed hardware specifications, serials, and lifecycle data live in dedicated inventory records under:
+## Compute and endpoints
+- Primary authoring / remote desktop: Dell OptiPlex 3080
+- Virtualization host: Lenovo ThinkCentre M720s (Proxmox VE planned)
+- Thin client / terminal: Raspberry Pi (role still TBD)
 
-➡️ `hardware/inventory/`
+## Network infrastructure
+- Firewall / router: repurposed Untangle hardware, running pfSense
+- Switch: Cisco Catalyst 3560, 8-port, managed
+- Wireless access point: TBD, planned for a later phase
 
-This mirrors professional practice where:
-- Executive views summarize assets
-- Detailed inventories are stored separately
+## Keeping this current
 
----
+This file stays a summary — no serials or sensitive details get added here, ever. I only touch it when a core asset gets added, removed, repurposed, or when a role changes meaningfully. The detailed records under `10-hardware/inventory/` are the ones that actually get versioned as things change day to day.
 
-## Core Infrastructure Assets
-
-### Domains
-- **External Domain:** `techtheworld.win`
-- **Internal Namespace:** `corp.techtheworld.win`
-
----
-
-### Compute & Endpoints
-- **Primary Authoring / Remote Desktop:** Dell OptiPlex 3080  
-- **Virtualization Host:** Lenovo ThinkCentre M720s (Proxmox VE planned)
-- **Thin Client / Terminal:** Raspberry Pi (role TBD)
-
----
-
-### Network Infrastructure
-- **Firewall / Router:** Repurposed Untangle hardware (pfSense)
-- **Switch:** Cisco Catalyst 3560 (8-port, managed)
-- **Wireless Access Point:** TBD (planned phase)
-
----
-
-## Inventory Governance
-
-- This file is a **summary view only**
-- No serial numbers or sensitive details are stored here
-- Updates occur only when:
-  - A core asset is added, removed, or repurposed
-  - Roles change meaningfully
-
-Detailed inventory records are treated as operational artifacts and versioned separately.
-
----
-
-## Summary
-
-This inventory reflects the **current, intentional scope** of the HomeLab.
-
-It supports:
-- Architectural clarity
-- Reviewer orientation
-- Professional documentation standards
-
-As the lab evolves, this overview will remain concise while detailed records scale independently.
+This reflects the current, intentional scope of the lab — not everything I own, just what's actually in play.

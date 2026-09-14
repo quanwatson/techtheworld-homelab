@@ -1,107 +1,36 @@
 # Environments Overview
 
-## Purpose of This Document
+This document lays out the logical environments in the HomeLab — how they're separated, who governs what, and how they're expected to change over time. These aren't ad-hoc groupings; they're boundaries I use on purpose to manage risk, stability, and how fast things are allowed to change, the same way environments get handled in a real IT or MSP shop.
 
-This document defines the **logical environments** used within the HomeLab and explains how they are separated, governed, and evolved over time.
+## The general approach
 
-Environments are not treated as ad-hoc groupings.  
-They are intentional boundaries used to manage **risk, stability, and change velocity**—mirroring how environments are handled in professional IT and MSP contexts.
+I follow a progressive environment model, balancing stability against experimentation on purpose rather than by accident. Household connectivity has to stay up no matter what I'm doing. Core infrastructure is protected from anything experimental. Changes go in incrementally and get validated. And environment boundaries are things I've actually written down — not just things I assume everyone (including future me) will remember.
 
----
+## The environments
 
-## Environment Philosophy
+### 1. Home / household
 
-The HomeLab follows a **progressive environment model**, where stability and experimentation are balanced intentionally.
+Keeping daily internet access stable and uninterrupted for the household. This isn't managed as part of the lab — it gets minimal changes, gets treated as an external dependency, and is protected from anything I'm experimenting with. Design rule, no exceptions: lab activity never disrupts household connectivity.
 
-Key principles:
-- Household connectivity must remain stable at all times
-- Core infrastructure is protected from experimental workloads
-- Changes are introduced incrementally and validated
-- Environment boundaries are documented, not assumed
+### 2. LAB environment (the primary active one)
 
----
+This is where the hands-on learning, validation, and controlled experimentation actually happens. It covers network segmentation on VLAN 10, pfSense routing and firewalling, switch configuration and hardening, and the Proxmox platform along with whatever infrastructure services sit on it.
 
-## Defined Environments
+It's actively changing, fully documented, change-controlled, and recoverable via console access if I lock myself out (which has happened). Think of it as production-inspired but explicitly non-production.
 
-### 1. Home / Household Environment
+### 3. Management plane (planned)
 
-**Purpose:**  
-Maintain uninterrupted, stable internet access for daily household use.
+Eventually this handles centralized management and control of infrastructure components — a dedicated management VLAN, restricted access paths, identity-based access control, and monitoring/logging endpoints. The goal is separating control traffic from workload traffic the way enterprise environments do, once there's enough here to justify it.
 
-**Characteristics:**
-- Not managed as part of the lab
-- Minimal changes
-- Treated as an external dependency
-- Protected from lab experimentation
+### 4. Services environment (planned)
 
-**Design Rule:**  
-No lab activity should disrupt household connectivity.
+This is where internal infrastructure services will live once the platform and network are actually stable — internal DNS, an internal certificate authority, Active Directory, and control-plane tooling (Odoo-based). Services get deployed after the foundation is proven, not before.
 
----
+## How environments are allowed to talk to each other
 
-### 2. LAB Environment (Primary Active Environment)
+Home to LAB traffic only goes through pfSense. LAB to Home is restricted and monitored. LAB to Management is controlled and least-privilege. Services to Management uses trusted, authenticated paths only. Nothing skips a hop just because it'd be more convenient.
 
-**Purpose:**  
-Hands-on learning, validation, and controlled experimentation.
-
-**Scope:**
-- Network segmentation (VLAN 10)
-- pfSense routing and firewalling
-- Switch configuration and hardening
-- Proxmox platform and infrastructure services
-
-**Characteristics:**
-- Actively changing
-- Fully documented
-- Change-controlled
-- Console-accessible for recovery
-
-This environment represents a **production-inspired but non-production** system.
-
----
-
-### 3. Management Plane (Planned / Future)
-
-**Purpose:**  
-Centralized management and control of infrastructure components.
-
-**Planned Capabilities:**
-- Dedicated management VLAN
-- Restricted access paths
-- Identity-based access control
-- Monitoring and logging endpoints
-
-This environment will eventually separate **control traffic** from **workload traffic**, reflecting enterprise best practices.
-
----
-
-### 4. Services Environment (Planned)
-
-**Purpose:**  
-Host internal infrastructure services that support the lab and future client simulations.
-
-**Examples:**
-- Internal DNS
-- Internal Certificate Authority
-- Directory Services (AD)
-- Control-plane tooling (Odoo-based)
-
-Services are deployed **after** platform and network stability are proven.
-
----
-
-## Environment Interaction Rules
-
-- Home → LAB: Allowed only through pfSense
-- LAB → Home: Restricted and monitored
-- LAB → Management: Controlled, least-privilege
-- Services → Management: Trusted, authenticated paths only
-
-No environment bypasses another directly.
-
----
-
-## Change Discipline by Environment
+## Change velocity by environment
 
 | Environment | Change Velocity | Risk Tolerance |
 |-----------|----------------|---------------|
@@ -110,18 +39,8 @@ No environment bypasses another directly.
 | Management | Low | Minimal |
 | Services | Low–Moderate | Controlled |
 
-Changes in higher-risk environments never propagate downward without validation.
+Changes in a higher-risk environment don't propagate down into a lower-risk one without being validated first.
 
----
+## Why bother with all this
 
-## Summary
-
-Environment separation in this HomeLab is intentional and enforced.
-
-It enables:
-- Safer experimentation
-- Faster recovery
-- Clear fault isolation
-- Professional change management habits
-
-This structure mirrors how real-world environments are protected, evolved, and governed.
+Separating environments this explicitly buys safer experimentation, faster recovery when something breaks, cleaner fault isolation, and habits around change management that actually transfer to a real job. It's the same reasoning that keeps a household network stable while I mess with VLANs three feet away.

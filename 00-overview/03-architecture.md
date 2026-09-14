@@ -1,88 +1,26 @@
 # Architecture Overview
 
-## Purpose of This Document
+This document describes how the HomeLab is actually put together — how it's structured, why I split things up the way I did, and what assumptions shaped those decisions. This is design documentation, not a dump of live config output.
 
-This document describes the **intentional architecture** of the HomeLab environment.
+## Principles guiding the design
 
-It explains:
-- How the system is structured
-- Why components are separated the way they are
-- What assumptions and constraints guided design decisions
-- How the architecture supports both learning and professional relevance
+**Separation of concerns.** Each major responsibility is isolated so a failure in one place doesn't take down everything else and so troubleshooting stays simple. The firewall handles routing and security. Switching enforces Layer 2 boundaries. Virtualization hosts services — it doesn't do control logic. Management traffic and production traffic don't mix.
 
-This is **design documentation**, not live configuration output.
+**Layered, one-thing-at-a-time changes.** Layer 3 (pfSense) gets validated before Layer 2 (switching). Core networking has to be stable before I deploy any services on top of it. Platform hardening happens before application workloads land. This is slower, but when something breaks I generally know which layer to start looking in.
 
----
+**Documentation as the actual control plane.** Decisions get written down before implementation — not after, and not as an afterthought for style points. Runbooks, checklists, and logs are what govern execution and validation here. In a real sense, the repository itself is the control surface for this environment.
 
-## Architectural Principles
+**Constraints, on purpose.** I'm working with legacy hardware, an older IOS version with real limitations, finite CPU/memory/storage, and a household connection that has to stay stable no matter what I'm doing in the lab. There's no "assume greenfield" here — every design has to work within what I've actually got, and that's treated as a training input, not a blocker.
 
-The HomeLab architecture is guided by the following principles:
+## High-level layout
 
-### 1. Separation of Concerns
-Each major responsibility is isolated to reduce blast radius and improve clarity:
-- Network security and routing are handled by a dedicated firewall
-- Switching enforces Layer 2 boundaries
-- Virtualization hosts services, not control logic
-- Management and production traffic are separated
+**Edge / firewall layer** — pfSense on dedicated hardware. Handles WAN connectivity, inter-VLAN routing, firewall policy enforcement, and DHCP/gateway services.
 
-### 2. Layered Design
-Changes are introduced one layer at a time:
-- Layer 3 (pfSense) is validated before Layer 2 (switching)
-- Core networking is stabilized before services are deployed
-- Platform hardening precedes application workloads
+**Access / switching layer** — a Cisco Catalyst 3560 running IOS 12.2 IPBASE. Handles VLAN enforcement, trunking to pfSense, port-level security and hardening, and physical access control.
 
-This minimizes ambiguity during failures and simplifies rollback.
+**Compute / virtualization layer** — Proxmox VE on a dedicated host. Hosts infrastructure services, isolates workloads via VMs, handles snapshotting and recovery, and will be the foundation for everything in later phases.
 
-### 3. Documentation as Control Plane
-Architecture decisions are documented **before** implementation.
-Runbooks, checklists, and logs govern execution and validation.
-
-The repository itself acts as a **control surface** for the environment.
-
-### 4. Constraint-Aware Engineering
-The architecture intentionally reflects real-world constraints:
-- Legacy hardware and older IOS limitations
-- Finite CPU, memory, and storage resources
-- Household connectivity must remain stable
-- No assumptions of “greenfield” perfection
-
-Constraints are treated as training inputs, not blockers.
-
----
-
-## High-Level Architecture
-
-At a high level, the HomeLab consists of:
-
-- **Edge / Firewall Layer**
-  - pfSense running on dedicated hardware
-  - Responsible for:
-    - WAN connectivity
-    - Inter-VLAN routing
-    - Firewall policy enforcement
-    - DHCP and gateway services
-
-- **Access / Switching Layer**
-  - Cisco Catalyst 3560 (IOS 12.2 IPBASE)
-  - Responsible for:
-    - VLAN enforcement
-    - Trunking to pfSense
-    - Port-level security and hardening
-    - Physical access control
-
-- **Compute / Virtualization Layer**
-  - Proxmox VE on dedicated host
-  - Responsible for:
-    - Hosting infrastructure services
-    - Isolating workloads via VMs
-    - Snapshotting and recovery
-    - Acting as the service foundation for future phases
-
----
-
-## Network Segmentation Model
-
-The architecture uses explicit VLAN-based segmentation:
+## Network segmentation
 
 | VLAN | Purpose | Notes |
 |-----|--------|------|
@@ -91,86 +29,24 @@ The architecture uses explicit VLAN-based segmentation:
 | 30 | MGMT (future) | Dedicated management plane |
 | 999 | Blackhole / Native | Disabled ports and native VLAN |
 
-Key rules:
-- VLAN 1 is never used for management
-- Native VLAN is unused and non-routable
-- Trunks explicitly allow only required VLANs
-- Access ports are hardened and scoped
+A few rules I hold to without exception: VLAN 1 never carries management traffic, the native VLAN stays unused and non-routable, trunks only carry the VLANs they actually need, and access ports are hardened and scoped rather than left wide open.
 
----
+## Trust and identity boundaries
 
-## Trust & Identity Boundaries
+External trust is handled through Cloudflare for public DNS and TLS — nothing internal is exposed directly. Internally, there's a dedicated DNS namespace (`corp.techtheworld.win`), an internal certificate authority (planned), and service-to-service trust that's managed within the lab rather than borrowed from outside it. This mirrors how a lot of real organizations run hybrid trust models, which is intentional.
 
-The architecture separates **trust domains** explicitly:
+## How services get placed
 
-- External trust:
-  - Public DNS and TLS handled via Cloudflare
-  - No direct exposure of internal services
+Services get deployed based on role, not whatever's convenient at the time: one service per VM where it makes sense, infrastructure services before applications, control-plane services (DNS, CA, identity) kept isolated from everything else, and application services that never take on identity or trust responsibilities of their own. It's more setup work up front, but it keeps troubleshooting sane and leaves room to grow later.
 
-- Internal trust:
-  - Internal DNS namespace (`corp.techtheworld.win`)
-  - Internal Certificate Authority (planned)
-  - Service-to-service trust managed internally
+## Assumptions about failure
 
-This separation mirrors enterprise hybrid models.
+I assume interfaces will get misconfigured, ports will err-disable, services will fail, and documentation will occasionally lag behind reality for a bit. What makes that survivable is console access paths, known-good baselines, incremental changes, and rollback procedures that are actually written down instead of remembered. Failure here is an expected state, not something that means I did it wrong.
 
----
+## What this architecture is, and isn't
 
-## Service Placement Philosophy
+It's production-inspired, aware of its own constraints, documented well enough to review, and built to grow. It is not a high-availability production system, it's not optimized for peak performance, it's not locked to a particular vendor, and it's not designed to scale past a single operator running it.
 
-Services are deployed based on **role**, not convenience:
+## The point of it
 
-- One service per VM where possible
-- Infrastructure services precede applications
-- Control-plane services (DNS, CA, identity) are isolated
-- Application services never share identity or trust responsibilities
-
-This improves security, troubleshooting, and future scalability.
-
----
-
-## Failure & Recovery Assumptions
-
-The architecture assumes:
-- Interfaces will be misconfigured
-- Ports will err-disable
-- Services will fail
-- Documentation may lag reality temporarily
-
-Recovery is enabled through:
-- Console access paths
-- Known-good baselines
-- Incremental changes
-- Clear rollback procedures
-
-Failure is treated as an expected state, not an exception.
-
----
-
-## Architectural Scope (What This Is and Is Not)
-
-### This architecture **is**:
-- Production-inspired
-- Constraint-aware
-- Documented and reviewable
-- Designed for growth
-
-### This architecture **is not**:
-- A high-availability production system
-- Optimized for maximum performance
-- Vendor-locked or tool-centric
-- Built for scale beyond a single operator
-
----
-
-## Summary
-
-This HomeLab architecture is intentionally simple, explicit, and disciplined.
-
-It is designed to demonstrate:
-- Sound infrastructure design thinking
-- Respect for operational risk
-- Clear separation of responsibility
-- Professional documentation practices
-
-Most importantly, it reflects **how I approach engineering problems** — with structure, caution, and intent.
+This architecture is intentionally simple, explicit, and disciplined — not because simple is impressive, but because it's the version I can actually reason about end to end. If it shows anything, I'd want it to show sound infrastructure thinking, respect for operational risk, clear separation of responsibility, and documentation habits that would hold up on a real team.

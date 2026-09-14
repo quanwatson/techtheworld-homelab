@@ -1,170 +1,45 @@
 # Roadmap Overview
 
-## Purpose of This Document
+This is the phase-based plan I'm using to build out the HomeLab — sequencing, defined stopping points, and gates between phases so the work stays aligned with what I'm actually trying to learn. It's not a task list so much as an execution framework: nothing here happens just because it's next on a list.
 
-This document outlines the **phase-based roadmap** used to build and evolve the HomeLab.
+A few rules I try to follow: build foundations before services, validate before expanding, document before implementing, one major change per session, and no phase advances until the current one is actually stable. Each phase is supposed to leave behind something reviewable, not just a config that happens to work.
 
-The roadmap provides:
-- Clear sequencing of work
-- Defined stopping points
-- Gated progression between phases
-- Alignment between learning objectives and technical outcomes
+## Where things stand, phase by phase
 
-This is not a task list — it is an **execution framework**.
+**Phase 0 — Foundations & Discipline** ✅ complete
+Professional workflow and documentation habits: repo structure, logging taxonomy, git workflow, documentation-first methodology. Outcome: a place where I can make changes safely and actually trust my own review of them.
 
----
+**Phase 1 — Firewall & Layer 3 Baseline** ✅ complete
+pfSense deployment, VLAN routing, DHCP and firewall rules, Layer 3 validation. Outcome: deterministic routing and a real segmentation foundation.
 
-## Roadmap Philosophy
+**Phase 2 — Switching & Layer 2 Enforcement** ✅ complete
+Managed switch configuration, VLAN trunking, access port control, management isolation. Outcome: Layer 2 boundaries enforced and validated.
 
-The roadmap follows these guiding principles:
+**Phase 3 — Switch Hardening** ✅ complete
+PortFast, BPDU Guard, storm control, err-disable recovery. Outcome: protection mechanisms I've actually tested against live failure scenarios, not just configured and hoped worked.
 
-- Build foundations before services
-- Validate before expanding
-- Document before implementing
-- One major change per session
-- No phase advances without stability
+**Phase 4 — Service Enablement & Virtualization** 🟡 active
 
-Each phase produces **reviewable artifacts**, not just configurations.
+- *4.1 — Domain & Certificate Strategy* ✅ complete: external domain, internal namespace design, certificate trust model, DNS strategy.
+- *4.2 — Proxmox Platform* 🟡 planning complete: hardware validated, VM layout designed, network integration planned, execution pending.
 
----
+Outcome once this phase wraps: a platform ready to actually host infrastructure services.
 
-## Phase Overview
+**Phase 5 — Core Infrastructure Services** 🔜 future
+Internal DNS, internal certificate authority, time and trust services.
 
-### Phase 0 — Foundations & Discipline ✅ COMPLETE
-**Focus:** Professional workflow and documentation discipline
+**Phase 6 — Identity & Directory Services** 🔜 future
+Active Directory, GPO baselines, role-based access.
 
-- Repository structure
-- Logging taxonomy
-- Git workflow
-- Documentation-first methodology
+**Phase 7 — Control Plane & Documentation Services** 🔜 future
+An Odoo-based IT-Glue-style system, asset inventory, credential management, service mapping.
 
-**Outcome:**  
-A controlled environment where changes can be made safely and reviewed confidently.
+**Phase 8 — Automation, Monitoring & AI** 🔜 future
+Monitoring stack, alerting, automation workflows, private AI services.
 
----
+**Phase 9 — Client-Ready Reference Architecture** 🔜 future
+MSP-ready reference designs, client onboarding playbooks, portfolio artifacts, mapping the homelab patterns onto enterprise scale.
 
-### Phase 1 — Firewall & Layer 3 Baseline ✅ COMPLETE
-**Focus:** Network routing and security foundation
+## Where I actually am right now
 
-- pfSense deployment
-- VLAN routing
-- DHCP and firewall rules
-- Layer 3 validation
-
-**Outcome:**  
-Deterministic routing and segmentation foundation.
-
----
-
-### Phase 2 — Switching & Layer 2 Enforcement ✅ COMPLETE
-**Focus:** Physical and logical network enforcement
-
-- Managed switch configuration
-- VLAN trunking
-- Access port control
-- Management isolation
-
-**Outcome:**  
-Layer 2 boundaries enforced and validated.
-
----
-
-### Phase 3 — Switch Hardening ✅ COMPLETE
-**Focus:** Access-layer protection and failure handling
-
-- PortFast
-- BPDU Guard
-- Storm control
-- Err-disable recovery
-
-**Outcome:**  
-Real-world protection mechanisms validated through live failure scenarios.
-
----
-
-### Phase 4 — Service Enablement & Virtualization 🟡 ACTIVE
-
-#### Phase 4.1 — Domain & Certificate Strategy ✅ COMPLETE
-- External domain definition
-- Internal namespace design
-- Certificate trust model
-- DNS strategy
-
-#### Phase 4.2 — Proxmox Platform 🟡 PLANNING COMPLETE
-- Hardware validated
-- VM layout designed
-- Network integration planned
-- Execution pending approval
-
-**Outcome:**  
-Platform ready to host infrastructure services.
-
----
-
-### Phase 5 — Core Infrastructure Services 🔜 FUTURE
-**Focus:** Internal service foundations
-
-- Internal DNS
-- Internal Certificate Authority
-- Time and trust services
-
----
-
-### Phase 6 — Identity & Directory Services 🔜 FUTURE
-**Focus:** Centralized identity and policy
-
-- Active Directory
-- GPO baselines
-- Role-based access
-
----
-
-### Phase 7 — Control Plane & Documentation Services 🔜 FUTURE
-**Focus:** Operational visibility and governance
-
-- Odoo-based IT Glue–like system
-- Asset inventory
-- Credential management
-- Service mapping
-
----
-
-### Phase 8 — Automation, Monitoring & AI 🔜 FUTURE
-**Focus:** Operational maturity and efficiency
-
-- Monitoring stack
-- Alerting
-- Automation workflows
-- Private AI services
-
----
-
-### Phase 9 — Client-Ready Reference Architecture 🔜 FUTURE
-**Focus:** Professional translation
-
-- MSP-ready reference designs
-- Client onboarding playbooks
-- Portfolio artifacts
-- Homelab → enterprise mapping
-
----
-
-## Roadmap Status Summary
-
-- ✔ Foundations stable
-- ✔ Networking complete and hardened
-- 🟡 Virtualization execution pending
-- 🔜 Services and identity planned
-
----
-
-## Summary
-
-This roadmap ensures the HomeLab evolves **intentionally**, not reactively.
-
-Each phase builds upon validated work, producing:
-- Clear learning outcomes
-- Professional documentation
-- Transferable real-world skills
-
-The roadmap reflects how infrastructure is responsibly grown in professional environments.
+Foundations are stable, and networking is complete and hardened. Virtualization execution is pending. Services and identity work is planned but not started. This roadmap is meant to keep the lab evolving on purpose instead of reactively chasing whatever seems interesting that week — each phase builds on validated work from the last one, which is really the only way any of this sticks.

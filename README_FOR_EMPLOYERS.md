@@ -1,77 +1,39 @@
 # HomeLab Project — Professional Context (For Employers)
 
-## Executive Summary (TL;DR)
+Thanks for taking the time to look through this. This document is the "why" behind the homelab — the technical detail lives in the rest of the repo, but I wanted a place to explain the reasoning without making you dig for it.
 
-This HomeLab is a deliberately designed, hands-on environment used to develop and validate real-world skills in **networking, systems administration, security, and solution design**.  
-It emphasizes **structured thinking, disciplined documentation, and phase-gated execution**, mirroring how infrastructure is designed and operated in professional IT, MSP, and enterprise environments.
+## The short version
 
----
+This is a hands-on lab where I practice networking, systems administration, security, and solution design the way I'd want to practice them if I were already in the role I'm working toward. I write things down before I do them, I gate changes by phase, and I treat the documentation as part of the deliverable, not an afterthought.
 
-Thank you for taking the time to review this repository.  
-This document provides professional context for *how* and *why* this HomeLab was built, complementing the technical detail found throughout the documentation.
+## Mindset
 
-## Professional Mindset & Intent
+I treat every piece of this lab as if it belonged to a real organization — with real segmentation, real recovery paths, and real consequences for skipping a step. My process is pretty consistent:
 
-This HomeLab functions as a **controlled, production-inspired environment** where I practice designing, deploying, securing, and maintaining systems with intention.
+1. Define the actual objective or use case.
+2. Design the solution before touching anything.
+3. Implement it in controlled stages.
+4. Validate behavior and think through how it fails.
+5. Write down the decisions, trade-offs, and what I'd do differently.
 
-Every component is approached as if it were part of a real organization, with attention paid to:
-- Network segmentation and fault isolation  
-- Security boundaries and recovery paths  
-- Documentation as a control plane  
-- Maintainability, auditability, and clarity  
+That's the same rhythm I'd want to bring to enterprise IT, MSP, or solutions architecture work: stability and clarity over shortcuts, even when the shortcut is tempting at 11pm on a Tuesday.
 
-My operating model is consistent and deliberate:
+## Documentation isn't a byproduct here
 
-1. Define a clear objective or use case  
-2. Design the solution before implementation  
-3. Implement in controlled stages  
-4. Validate behavior and failure modes  
-5. Document decisions, trade-offs, and lessons learned  
+Before any change that actually matters, I write the intent, name the risks, and figure out the rollback path first. Runbooks and checklists gate execution rather than getting written up afterward for appearances. It's slower up front. It also means someone else — or future me, six months later — can actually follow what happened and why.
 
-This mirrors how I aim to contribute in **enterprise IT, MSP, and solutions architecture roles**—prioritizing stability, clarity, and long-term operability over shortcuts.
+## How I used AI tools, plainly
 
-## Documentation-First Engineering
+I used AI for research and for sanity-checking ideas, the same way I'd use documentation or a knowledgeable coworker — to move faster and catch things I might've missed. The architecture decisions, the configuration, the troubleshooting, and the validation were all mine. If I couldn't explain why something worked, I didn't consider it done. The point of this lab was to build judgment, not to generate artifacts.
 
-A core principle of this project is that **documentation is not a byproduct—it is part of the system**.
+## What I'm hoping this shows
 
-Before any significant infrastructure change:
-- Design intent is written first  
-- Risks and rollback paths are identified  
-- Execution is gated by checklists and runbooks  
+Structured, phase-based problem solving. Practical use of networking, virtualization, and security concepts, not just vocabulary. Real change control and what happens when something breaks. Documentation that's actually useful to someone else.
 
-This approach reduces ambiguity, enables safer iteration, and produces artifacts that can be reviewed, audited, or handed off—just as in professional environments.
+More than any of that individually, I want it to show how I think under a real technical problem — where I'm willing to move fast versus where I slow down and get careful.
 
-## Thoughtful Use of Modern Tooling
+## If you're reviewing this
 
-Modern tooling—including AI-assisted research and guidance—was used **selectively and intentionally** to accelerate learning and improve clarity.
+Start with `00-overview/` for orientation, then the build journal for what actually changed, the runbooks for how I execute safely, and the learning log for growth over time.
 
-All of the following were performed by me:
-- Architecture decisions  
-- Configuration and implementation  
-- Troubleshooting and recovery  
-- Validation and documentation  
-
-AI tools were treated as **reference and acceleration aids**, not replacements for understanding or responsibility. The focus throughout was on building sound engineering judgment and operational confidence.
-
-## What This Repository Demonstrates
-
-This repository is intended to demonstrate:
-
-- Structured, phase-based problem solving  
-- Practical application of networking, virtualization, and security concepts  
-- Real-world change control and failure handling  
-- Clear, intentional documentation practices  
-- Continuous improvement through reflection and iteration  
-
-More importantly, it demonstrates **how I think and operate** when faced with real technical challenges—balancing speed with caution, and experimentation with discipline.
-
-## For Reviewers
-
-If you are reviewing this repository as a potential employer, hiring manager, or technical peer:
-
-- Start with **`00-overview/overview.md`** for orientation  
-- Review the **Build Journal** to understand state changes  
-- Review the **Runbooks** to see how work is executed safely  
-- Review the **Learning Log** to understand growth and judgment  
-
-My goal with this HomeLab is not just to showcase tools or configurations, but to demonstrate a **professional engineering mindset** aligned with real-world IT and solutions architecture work.
+This lab isn't meant to be a showcase of tools I've touched. It's meant to demonstrate how I'd actually operate on your infrastructure.

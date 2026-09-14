@@ -2,115 +2,50 @@
 
 ## Overview
 
-This repository documents a deliberately designed HomeLab used to develop and validate real-world skills in **networking, systems administration, security, and solution architecture**.
+This repo documents a homelab I built to develop real skills in networking, systems administration, security, and solutions architecture — not just to have a pile of gear running in a closet.
 
-The lab is built and operated using **documentation-first, phase-gated execution**, mirroring how infrastructure is designed, implemented, and maintained in professional IT, MSP, and enterprise environments.
+I run it documentation-first and phase-gated, which is a fancy way of saying: I write down what I'm about to do and why before I do it, and I don't move to the next layer until the current one actually works. That's closer to how change gets managed in a real IT shop or MSP than how most home labs get built.
 
+## What this is (and isn't)
 
----
+It's a controlled, production-inspired environment with change control, validation, and rollback baked in from the start. I document it the way I'd document something supporting an actual organization, because that's the habit I'm trying to build.
 
-## What This Lab Is (and Is Not)
+It's not a pile of one-off experiments, a click-through tutorial repo, or a place where I bolt on every new tool I read about. If a folder in here doesn't have a reason for existing, it gets cut.
 
-**This lab is:**
-- A controlled, production-inspired environment
-- Built with change control, validation, and rollback in mind
-- Designed to simulate real operational constraints
-- Documented as if it were supporting a real organization
+## Core principles
 
-**This lab is not:**
-- A collection of ad-hoc experiments
-- A “click-through” tutorial repo
-- A single-tool showcase
-- A résumé keyword dump without operational depth
+**Documentation-first.** Before I touch a config, I write down the intent, the risks, and how I'd roll it back if it goes sideways. Runbooks and checklists gate execution — they're not written after the fact to look tidy.
 
----
+**Layered, phase-gated execution.** Changes go in one layer at a time — Layer 3 before Layer 2, planning before execution, validation before expansion. It's slower than just wiring everything up at once, but it means when something breaks, I usually know within one layer where to look.
 
-## Core Principles
+**Real-world constraints, on purpose.** I'm running on older switch hardware with real IOS limitations, finite CPU and storage, and a household internet connection that has to stay up regardless of what I'm doing to the lab. Those constraints aren't a downside — they're most of the point. Anyone can build clean infrastructure on infinite resources.
 
-### Documentation-First Engineering
-Documentation is treated as part of the system, not a byproduct.
+## Repository navigation
 
-Before changes are made:
-- Design intent is written
-- Risks and rollback paths are identified
-- Execution is gated by checklists and runbooks
+**Start here:** `00-overview/` — vision, goals, architecture, environments, and the roadmap. Read `01-vision.md` first if you only read one file.
 
-### Layered, Phase-Gated Execution
-Infrastructure changes are introduced one layer at a time:
-- Layer 3 before Layer 2
-- Planning before execution
-- Validation before expansion
+**Core documentation:**
+- `01-logs/` — build journal (what actually changed), learning log (what I understood and when), session notes (so I can pick up where I left off)
+- `03-network/` — firewall, routing, VLANs, switching
+- `14-runbooks/` — step-by-step procedures, gated by phase
 
-This reduces ambiguity, simplifies troubleshooting, and mirrors production change management.
+**Platform and services:** Proxmox virtualization, an internal CA and internal DNS (both planned), directory services and control-plane tooling (further out).
 
-### Real-World Constraints
-The lab intentionally incorporates:
-- Legacy hardware and software limitations
-- Platform feature constraints
-- Failure scenarios and recovery paths
-- Security trade-offs and audit considerations
+**Certification, career, and business track:**
+- `training-program/` — the 36-month Solutions Architect + vCIO study plan, time log, and stack inventory
+- `15-certifications/` — study notes, practice-exam logs, glossary
+- `16-career/` — skill matrix history, monthly reviews, proof-of-work index
+- `17-ots/` — Ogun Tech Solutions proof-of-work, SOPs, client docs
+- `18-solutions-architecture-adrs/` — architecture decision records tied to the SA track
 
----
+## Tooling and methodology, honestly
 
-## Repository Navigation
+I used AI tools — research, drafting help, sanity-checking my thinking — the way I'd use a senior coworker or a good reference doc: to move faster and catch blind spots, not to skip the work. Every architecture decision, every config, every troubleshooting session, and every line of documentation here was done by me. If I didn't understand why something worked, I didn't ship it.
 
-### Start Here
-- **`00-overview/overview.md`** — How the lab is structured and how to read this repo
+## For employers and reviewers
 
-### Core Documentation
-- **`01-logs/`**
-  - Build Journal (state changes)
-  - Learning Log (understanding gained)
-  - Session Notes (continuity)
-- **`03-network/`**
-  - Firewall, routing, VLANs, switching
-- **`14-runbooks/`**
-  - Phase-gated, step-by-step operational procedures
+Start with `00-overview/`, then look at the build journal for real state changes, the runbooks for how I execute safely, and the learning log for growth over time. `README_FOR_EMPLOYERS.md` has more on the reasoning behind how this is built.
 
-### Platform & Services
-- Proxmox virtualization platform
-- Internal certificate authority (planned)
-- Internal DNS (planned)
-- Identity and directory services (future)
-- Control-plane documentation services (future)
+## The point of all this
 
-### Certification, Career & Business Track
-- **`training-program/`** — the 36-month Solutions Architect + vCIO certification/training program (reference doc, time log, stack inventory)
-- **`15-certifications/`** — study notes, practice-exam logs, glossary additions
-- **`16-career/`** — skill matrix history, monthly reviews, proof-of-work index
-- **`17-ots/`** — Ogun Tech Solutions (OTS) proof-of-work, SOPs, client docs
-- **`18-solutions-architecture-adrs/`** — architecture decision records for the Solutions Architect track
-
----
-
-## Tooling & Methodology
-
-Modern tooling—including AI-assisted research and guidance—was used **selectively and intentionally** to accelerate learning and improve clarity.
-
-All of the following were performed by me:
-- Architecture decisions
-- Configuration and implementation
-- Troubleshooting and recovery
-- Validation and documentation
-
-AI tools were treated as **reference and acceleration aids**, not replacements for understanding or responsibility.
-
----
-
-## For Employers and Reviewers
-
-If you are reviewing this repository in a professional context:
-
-- Begin with **`00-overview/overview.md`**
-- Review the **Build Journal** to see real state changes
-- Review the **Runbooks** to understand execution discipline
-- Review the **Learning Log** to see growth and judgment over time
-
-For a deeper explanation of intent, mindset, and professional framing, see:  
-➡️ **Professional Context:** *HomeLab Project — Professional Context (For Employers)*
-
----
-
-## Project Goal
-
-The goal of this HomeLab is not just to demonstrate technical capability, but to show **how I think, plan, execute, and document** systems—skills directly transferable to **enterprise IT, MSP operations, and solutions architecture roles**.
+The goal isn't to prove I can rack a server. It's to show how I think, plan, execute, and document — skills that transfer directly to enterprise IT, MSP work, and solutions architecture roles.
