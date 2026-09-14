@@ -1,7 +1,7 @@
 # Network Playbook
 Design → Implement → Validate → Document → Promote
 
-This playbook defines **repeatable, enterprise-grade network workflows** for your homelab, modeled after real datacenter operations and change discipline.
+These are the repeatable steps for any network change in this lab, modeled loosely on real datacenter change discipline: design it, implement it, prove it works, write it down, then promote it out of the sandbox.
 
 ---
 

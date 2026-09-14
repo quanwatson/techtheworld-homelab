@@ -1,71 +1,11 @@
-# Service Lifecycle Narrative
+# Service Lifecycle
 
-Services in this lab follow a deliberate lifecycle designed to emulate
-real-world enterprise environments and reduce risk.
+Services here don't go straight from "idea" to "running forever." They move through three stages, mostly to force some discipline and partly to mimic how a real environment would actually treat a new service.
 
----
+**Sandbox.** Free experimentation, low stakes, minimal dependencies. This is where I test new software, poke at an architecture idea, and break things on purpose to see what happens.
 
-## 1. Sandbox
+**Pre-production.** Once something survives the sandbox, it moves here and starts looking more like the real thing — closer to production topology, tighter security, monitoring and logging turned on, an actual backup strategy. This is where I do performance and security testing and see how it fails.
 
-**Purpose:**  
-Free experimentation and proof-of-concept development.
+**Production-like.** The service now gets treated as if it mattered to someone besides me — change discipline, required monitoring and alerting, tested backup/restore, documentation that isn't optional. This is also where I find out if something can actually stay up for a while without me babysitting it.
 
-**Characteristics:**  
-- Minimal blast-radius concerns
-- Flexible configuration
-- Rapid iteration
-- Limited dependencies
-
-**Typical Activities:**  
-- Testing new software
-- Validating architecture ideas
-- Breaking and rebuilding intentionally
-
----
-
-## 2. Pre-Production
-
-**Purpose:**  
-Validation and hardening before production-like exposure.
-
-**Characteristics:**  
-- Mirrors production topology where feasible
-- Tighter security controls
-- Monitoring and logging enabled
-- Backup strategy defined
-
-**Typical Activities:**  
-- Performance validation
-- Security testing
-- Configuration refinement
-- Failure and recovery testing
-
----
-
-## 3. Production-Like
-
-**Purpose:**  
-Operate services as if they were customer- or business-facing.
-
-**Characteristics:**  
-- Change discipline enforced
-- Monitoring and alerting required
-- Backup and restore tested
-- Documentation considered mandatory
-
-**Typical Activities:**  
-- Long-running services
-- Stability testing
-- Operational maturity exercises
-
----
-
-## Promotion Philosophy
-
-A service is promoted only when:
-- Its purpose is clearly defined
-- Security boundaries are understood
-- Monitoring and backups exist
-- Rollback is possible
-
-This lifecycle trains production thinking while preserving the freedom to experiment safely.
+A service only gets promoted to the next stage once its purpose is clear, its security boundaries are understood, monitoring and backups actually exist (not just planned), and I know how to roll it back if it goes wrong. Skipping that isn't saving time — it's just moving the risk to later, when it's harder to deal with.
