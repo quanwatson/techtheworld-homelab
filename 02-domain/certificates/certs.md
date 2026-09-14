@@ -1,7 +1,6 @@
 # Certificates Strategy (PKI) — techtheworld Homelab
 
-This document defines the **certificate (PKI) strategy** for the techtheworld homelab and mock enterprise environment.
-The design intentionally mirrors real enterprise and MSP-grade certificate practices.
+This is the certificate strategy for the lab, built to look and behave like a real enterprise/MSP PKI setup rather than a pile of self-signed certs I never rotate.
 
 ---
 

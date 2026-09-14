@@ -1,6 +1,6 @@
 # Internal CA Architecture — techtheworld Homelab
 
-This document defines the **internal PKI architecture** for the homelab.
+This is the internal PKI architecture for the lab — how the CA hierarchy is structured and what each tier is responsible for.
 
 ---
 

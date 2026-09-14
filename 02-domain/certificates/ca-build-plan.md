@@ -1,6 +1,6 @@
 # CA Build Plan — Phase 4.x
 
-This document defines the **execution plan** for deploying the Internal CA.
+The execution plan for actually standing up the Internal CA, step by step.
 
 ---
 
