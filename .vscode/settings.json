@@ -1,0 +1,14 @@
+{
+  "files.associations": {
+    "*.md": "markdown"
+  },
+  "markdown.extension.toc.levels": "2..4",
+  "editor.wordWrap": "on",
+  "editor.rulers": [100],
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "search.exclude": {
+    "**/*.jpg": true,
+    "**/*.png": true
+  }
+}

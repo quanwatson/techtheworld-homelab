@@ -1,0 +1,34 @@
+# Secrets & credentials — never commit these
+*.env
+.env.*
+*secrets*
+*credentials*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+*.ovpn
+*psk*
+
+# Raw device/config exports that may embed secrets — export redacted/templated copies only
+*.cfg.bak
+*-running-config.txt
+*-startup-config.txt
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+
+# Node/Python if automation scripts get added later
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# n8n exports may embed credentials inline
+*credentials.json

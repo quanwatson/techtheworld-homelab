@@ -570,4 +570,27 @@ Installed pfSense CE 2.8.1 on dedicated firewall hardware. Initial setup perform
 ## BJ-028 (Draft)
 Checkpoint reached — network + hypervisor stable.
 Paused before service deployment pending topology commit.
+
+## 09-14-2026
+### BJ-029
+**Change:** Repo integrated with the 36-month Solutions Architect + vCIO certification/training program; build status reconciled after an ~8-month pause
+
+**Notes:**
+- Last commit prior to this entry was dated 2026-01-15 (topology checkpoint referenced in BJ-027/BJ-028's Next Step). The build paused at that checkpoint — Phase 5 (Internal CA / service deployment) was not started.
+- The certification/training program (tracked separately in `training-program/`) currently frames the homelab work as a fresh build starting September 2026. This entry exists to reconcile the two: the Phase 0–3 work documented above (BJ-001 through BJ-027) is real, completed, and stands as-is — it is not being discarded or redone from scratch. It is being resumed and extended, not restarted.
+- Added new top-level folders to bring this repo in line with the training program: `training-program/`, `15-certifications/`, `16-career/`, `17-ots/`, `18-solutions-architecture-adrs/`, and `.vscode/` (editor settings/extensions only, no build changes).
+- No changes made to any existing numbered folder's content in this entry — this is a structural/documentation addition only.
+
+**Validation Evidence:**
+- `git log` confirms last prior commit 2026-01-15
+- No conflicts between historical build-journal entries and current plan; this entry is additive
+
+**Impact:**
+- No disruption to LAB network, endpoints, or prior documentation
+- Clarifies repo status for anyone (including future employers/reviewers) reading the history in order
+
+**Status:** Completed
+**Next Step:**
+- Resume from BJ-028's checkpoint: snapshot baseline state, create current-state logical network topology, begin Phase 5 with Internal CA deployment
+- Keep `training-program/Training-Time-Log.md` and this journal in sync going forward — journal entries track the build, the time log tracks study/session hours
  

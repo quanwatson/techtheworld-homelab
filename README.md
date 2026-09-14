@@ -74,6 +74,13 @@ The lab intentionally incorporates:
 - Identity and directory services (future)
 - Control-plane documentation services (future)
 
+### Certification, Career & Business Track
+- **`training-program/`** — the 36-month Solutions Architect + vCIO certification/training program (reference doc, time log, stack inventory)
+- **`15-certifications/`** — study notes, practice-exam logs, glossary additions
+- **`16-career/`** — skill matrix history, monthly reviews, proof-of-work index
+- **`17-ots/`** — Ogun Tech Solutions (OTS) proof-of-work, SOPs, client docs
+- **`18-solutions-architecture-adrs/`** — architecture decision records for the Solutions Architect track
+
 ---
 
 ## Tooling & Methodology
