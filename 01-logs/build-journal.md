@@ -591,4 +591,36 @@ Paused before service deployment pending topology commit.
 **Next Step:**
 - Resume from BJ-028's checkpoint: snapshot baseline state, create current-state logical network topology, begin Phase 5 with Internal CA deployment
 - Keep `training-program/Training-Time-Log.md` and this journal in sync going forward — journal entries track the build, the time log tracks study/session hours
+
+## 09-14-2026
+### BJ-030
+**Change:** Daily-driver OS rebuild (Dell OptiPlex, GTX 1060 6GB) — replaced both prior drives with a single 512GB M.2 NVMe, moved to single-OS Omarchy; Omarchy install in progress, currently blocked
+
+**Notes:**
+- Hardware change: removed both prior drives from the earlier dual-boot attempt (Kingston 240GB SATA SSD, Seagate `ST1000LM035-1RK1` 931.5GB SATA HDD). Installed one new 512GB M.2 NVMe drive as the sole drive, used whole-disk. This machine is now single-OS Omarchy — Windows dual-boot is retired from scope for this build.
+- New M.2 drive was visible in BIOS but invisible to an Ubuntu live session (`lsblk`/`fdisk -l` returned nothing for it). Root cause: Intel VMD/RAID controller (`lspci` showed `00:17.0 RAID bus controller: Intel Corporation Device a386`). Fixed by switching the BIOS SATA/NVMe controller mode from RAID/VMD to AHCI.
+- Ran `archinstall`: Btrfs with subvolumes and zstd compression, no LUKS, Limine bootloader, sudo-enabled user `ots1` created during setup.
+- `ots1`'s sudo/login password was rejected after install. Fixed by logging in as `root` and running `passwd ots1`, resetting to an alphanumeric-only password to rule out a keyboard-layout mismatch on symbol characters.
+- Ran the Omarchy installer (`curl -fsSL https://omarchy.org/install | bash`) logged in as `ots1`, not root, per the standing rule below. Hit a `linux-firmware-other` vs `linux-firmware-ti` package file conflict; fixed with `sudo pacman -Syu`.
+- Installer then warned "Omarchy install requires: Limine bootloader." Diagnosed with `pacman -Q | grep limine` (empty), `cat /boot/limine.conf` (missing), and `efibootmgr -v` (showed `systemd-bootx64.efi`) — confirmed `archinstall` had actually installed systemd-boot, not Limine, despite Limine being the intended/selected choice.
+- Redid `archinstall` from scratch, this time explicitly confirming Limine on the bootloader screen rather than accepting whatever was pre-highlighted.
+- On the redo: user creation and the firmware conflict cleared cleanly again, the Omarchy repo cloned, package installs started — then hit a new blocker: `gum-2.0.1-1-x86_64.pkg.tar.zst` returns a 404 from `stable-mirror.omarchy.org`. Tried `sudo pacman -Syyu` (forced database refresh) — did not resolve it. **Unresolved as of session end.** Posted to the Omarchy Discord for help: "gum-2.0.1-1 404 error from stable-mirror.omarchy.org during install."
+- Standing rule carried into this build: all post-install configuration is done logged in as the real user (`ots1`) using `sudo`, never as a root login shell — root-only config was the root cause of a prior attempt's graphical-login crash-loop (config landed in `/root` instead of `/home/ots1`).
+- Full attempt-by-attempt history, troubleshooting table, and pending GPU driver/Hyprland steps are now tracked in `14-runbooks/runbook-omarchy-install.md` (added this entry) rather than duplicated here.
+
+**Validation Evidence:**
+- `lspci` confirmed the VMD root cause before the AHCI fix
+- `pacman -Q | grep limine`, missing `/boot/limine.conf`, and `efibootmgr -v` confirmed the systemd-boot-vs-Limine mismatch before the `archinstall` redo
+- Omarchy Discord post filed as the open item for the `gum` mirror 404
+
+**Impact:**
+- No impact to the LAB network, pfSense, or the rest of the homelab build — isolated to the standalone daily-driver/remote-workstation box
+- Prior dual-boot framing for this machine is retired; treat it as single-OS Omarchy going forward
+
+**Status:** In progress — paused, blocked on the `gum-2.0.1-1` 404 from `stable-mirror.omarchy.org`
+
+**Next Step:**
+- Resolve the `gum` mirror 404 (tracked via the Omarchy Discord post) and resume the Omarchy package install
+- Once unblocked: GPU driver setup — `nvidia-dkms` (not `nvidia-open-dkms`, this is Pascal architecture), the four Hyprland env vars in `~/.config/hypr/envs.conf`, and the kernel param via `/etc/kernel/cmdline` + `sudo mkinitcpio -P`
+- Re-verify and update `10-hardware/inventory/optiplex-3080.md` once the install completes
  
