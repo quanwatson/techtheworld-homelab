@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Training Control Center</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Metal+Mania&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+  /* Cyberpunk command-center theme — a deliberate single dark look (matches the homelab
+     itself), so no light-mode branch: see artifact rules on committed single-look designs. */
+  :root{
+    --bg:#050308;
+    --surface:rgba(15,10,22,.74);
+    --surface-2:rgba(26,17,38,.62);
+    --border:rgba(45,232,201,.28);
+    --text:#eaf3ff;
+    --muted:#aab6da;
+    --faint:#75809f;
+    --accent:#2be8c9;
+    --accent-soft:rgba(43,232,201,.14);
+    --accent-ink:#8ffbe6;
+    --good:#39ff8f;
+    --good-soft:rgba(57,255,143,.14);
+    --warn:#ffcc33;
+    --warn-soft:rgba(255,204,51,.14);
+    --crit:#ff3d6a;
+    --crit-soft:rgba(255,61,106,.14);
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 0 26px -8px rgba(43,232,201,.35);
+    --glow: 0 0 10px rgba(43,232,201,.55), 0 0 26px rgba(43,232,201,.22);
+    /* chart series — categorical slots (fixed order, never cycled: year1/year2/year3), kept
+       visually distinct from the good/warn/crit status trio above */
+    --series-1:#38bdf8; --series-2:#fb923c; --series-3:#e879f9;
+    --series-seq:#38bdf8;
+    --chart-grid:rgba(255,255,255,.08); --chart-axis:rgba(255,255,255,.22);
+    --font-display:'Metal Mania',cursive;
+    --font-body:'Rajdhani',system-ui,sans-serif;
+    --font-mono:'Share Tech Mono',ui-monospace,monospace;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background-color:var(--bg);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0px, rgba(255,255,255,.035) 1px, transparent 1px, transparent 3px),
+      linear-gradient(rgba(43,232,201,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(43,232,201,.05) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(5,3,8,.90), rgba(5,3,8,.78) 35%, rgba(5,3,8,.93)),
+      url(bg-room.jpg);
+    background-size: auto, 42px 42px, 42px 42px, cover, cover;
+    background-position: 0 0, center, center, center, center;
+    background-repeat: repeat, repeat, repeat, no-repeat, no-repeat;
+    background-attachment: fixed, fixed, fixed, fixed, fixed;
+    color:var(--text);
+    font-family:var(--font-body); font-size:16.5px;
+    padding-inline:20px; padding-block:28px 60px;
+    max-width:1120px; margin-inline:auto;
+  }
+  .mono{font-family:var(--font-mono);}
+  h1,h2,h3{text-wrap:balance; margin:0;}
+  a{color:var(--accent);}
+  p{line-height:1.6;}
+
+  /* header */
+  .topbar{display:flex; flex-wrap:wrap; gap:16px; align-items:flex-start; justify-content:space-between; margin-bottom:10px;}
+  .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin:0 0 6px; text-shadow:0 0 8px rgba(43,232,201,.5);}
+  h1{font-family:var(--font-display); font-weight:400; font-size:36px; letter-spacing:.02em; line-height:1.15; color:var(--accent-ink); text-shadow:0 0 10px rgba(43,232,201,.65), 0 0 28px rgba(43,232,201,.3);}
+  .subtitle{color:var(--muted); font-size:15px; margin-top:8px; max-width:60ch;}
+  .kickoff-box{background:var(--surface); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:10px; padding:14px 18px; box-shadow:var(--shadow); text-align:center; min-width:150px;}
+  .kickoff-box .num{font-family:var(--font-mono); font-size:32px; font-weight:700; line-height:1; color:var(--accent); text-shadow:var(--glow);}
+  .kickoff-box .lbl{font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); margin-top:6px;}
+  .updated-line{font-family:var(--font-mono); font-size:11.5px; color:var(--faint); margin:0 0 22px;}
+
+  /* exec summary */
+  .exec{background:var(--surface); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:10px; padding:18px 20px; box-shadow:var(--shadow); margin-bottom:24px;}
+  .exec p{font-size:15px; color:var(--muted); margin:0;}
+  .exec p + p{margin-top:10px;}
+
+  /* stat grid */
+  .stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:26px;}
+  .stat{background:var(--surface); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:8px; padding:14px 16px; box-shadow:var(--shadow); position:relative;}
+  .stat .lbl{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); margin-bottom:6px;}
+  .stat .val{font-size:16px; font-weight:600; color:var(--text); font-variant-numeric:tabular-nums;}
+  .stat .sub{font-size:12px; color:var(--muted); margin-top:3px; font-family:var(--font-mono);}
+
+  section{margin-bottom:30px;}
+  .section-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:12px;}
+  .section-head h2{font-family:var(--font-body); font-size:16px; text-transform:uppercase; letter-spacing:.08em; color:var(--accent-ink); font-weight:700;}
+  .section-head h2::before{content:'// '; color:var(--accent); opacity:.65; font-family:var(--font-mono);}
+  .section-head .note{font-family:var(--font-mono); font-size:11.5px; color:var(--faint);}
+
+  /* role ladder */
+  .ladder{display:flex; align-items:center; gap:0; background:var(--surface); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:10px; padding:18px 20px; box-shadow:var(--shadow); overflow-x:auto;}
+  .rung{flex:1 1 0; min-width:130px; text-align:center; position:relative; padding-top:22px;}
+  .rung::before{content:""; position:absolute; top:6px; left:-50%; width:100%; height:2px; background:var(--border);}
+  .rung:first-child::before{display:none;}
+  .rung .dot{position:absolute; top:0; left:50%; transform:translateX(-50%); width:13px; height:13px; border-radius:50%; background:var(--surface-2); border:2px solid var(--border);}
+  .rung.now .dot{background:var(--accent); border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-soft), var(--glow);}
+  .rung .title{font-size:13px; font-weight:600; color:var(--text);}
+  .rung .when{font-family:var(--font-mono); font-size:10.5px; color:var(--faint); margin-top:3px;}
+  .rung.now .title{color:var(--accent-ink);}
+
+  /* phase timeline */
+  .timeline{display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; -webkit-overflow-scrolling:touch;}
+  .phase{flex:0 0 auto; min-width:155px; background:var(--surface); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:8px; padding:12px 14px; box-shadow:var(--shadow); position:relative;}
+  .phase.current{border-color:var(--accent); background:var(--accent-soft); box-shadow:var(--shadow), var(--glow);}
+  .phase.done{opacity:.55;}
+  .phase .pnum{font-family:var(--font-mono); font-size:11px; color:var(--faint); letter-spacing:.05em;}
+  .phase.current .pnum{color:var(--accent-ink);}
+  .phase .ptitle{font-size:13.5px; font-weight:600; margin-top:4px; color:var(--text);}
+  .phase .pdate{font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-top:6px;}
+  .pill{display:inline-block; font-family:var(--font-mono); font-size:10px; letter-spacing:.04em; padding:2px 7px; border-radius:3px; margin-top:8px; text-transform:uppercase;}
+  .pill.current{background:var(--accent); color:#02110d;}
+  .pill.upcoming{background:var(--surface-2); color:var(--muted); border:1px solid var(--border);}
+  .pill.done{background:var(--good-soft); color:var(--good);}
+
+  /* two column */
+  .cols{display:grid; grid-template-columns:1.3fr 1fr; gap:16px;}
+  @media (max-width:640px){ .cols{grid-template-columns:1fr;} }
+  .card{background:var(--surface); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:10px; padding:16px 18px; box-shadow:var(--shadow);}
+  .action-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px;}
+  .action-list li{display:flex; gap:10px; align-items:flex-start; font-size:14.5px;}
+  .action-list input[type="checkbox"]{margin-top:3px; accent-color:var(--accent); width:15px; height:15px; flex:0 0 auto;}
+  .action-list label{cursor:pointer;}
+  .action-list input:checked + label{color:var(--faint); text-decoration:line-through;}
+
+  .chip-row{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-size:12.5px; padding:5px 11px; border-radius:4px; border:1px solid var(--border); background:var(--surface-2); color:var(--muted);}
+  .chip.warn{background:var(--warn-soft); color:var(--warn); border-color:rgba(255,204,51,.35);}
+
+  .kv{display:flex; flex-direction:column; gap:8px; font-size:14px;}
+  .kv .row{display:flex; justify-content:space-between; gap:10px; border-bottom:1px dashed var(--border); padding-bottom:7px;}
+  .kv .row:last-child{border-bottom:none; padding-bottom:0;}
+  .kv .k{color:var(--muted);}
+  .kv .v{font-weight:600; text-align:right; color:var(--text); font-variant-numeric:tabular-nums;}
+
+  /* cert roadmap */
+  .progress-line{display:flex; align-items:center; gap:12px; margin-bottom:14px;}
+  .progress-track{flex:1; height:8px; border-radius:4px; background:var(--surface-2); overflow:hidden; border:1px solid var(--border);}
+  .progress-track > span{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--accent-ink)); box-shadow:0 0 8px rgba(43,232,201,.65); transition:width 1.1s cubic-bezier(.16,1,.3,1);}
+  .progress-label{font-family:var(--font-mono); font-size:12px; color:var(--muted); white-space:nowrap;}
+  .cert-grid{display:flex; flex-direction:column; gap:8px;}
+  .cert-row{display:grid; grid-template-columns:28px 1fr auto auto; align-items:center; gap:12px; padding:10px 12px; border:1px solid var(--border); border-radius:6px; background:var(--surface);}
+  .cert-row .idx{font-family:var(--font-mono); color:var(--faint); font-size:12px;}
+  .cert-row .name{font-size:14px; font-weight:600; color:var(--text);}
+  .cert-row .name .code{color:var(--muted); font-weight:400; font-family:var(--font-mono); font-size:12px;}
+  .cert-row .window{font-family:var(--font-mono); font-size:11.5px; color:var(--muted); white-space:nowrap;}
+  .status{font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; padding:3px 9px; border-radius:3px; white-space:nowrap;}
+  .status.upcoming{background:var(--surface-2); color:var(--faint); border:1px solid var(--border);}
+  .status.year2{background:var(--warn-soft); color:var(--warn);}
+  .status.done{background:var(--good-soft); color:var(--good);}
+
+  /* skills */
+  .skill-cat{margin-bottom:16px;}
+  .skill-cat h3{font-family:var(--font-mono); font-size:12px; font-weight:600; color:var(--accent-ink); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;}
+  .skill-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px 20px;}
+  .skill{display:flex; flex-direction:column; gap:5px;}
+  .skill .top{display:flex; justify-content:space-between; font-size:13px;}
+  .skill .top .name{color:var(--text);}
+  .skill .top .score{font-family:var(--font-mono); color:var(--muted); font-variant-numeric:tabular-nums;}
+  .bar{height:6px; border-radius:3px; background:var(--surface-2); overflow:hidden; border:1px solid var(--border);}
+  .bar > span{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--accent-ink)); box-shadow:0 0 6px rgba(43,232,201,.55); transition:width .9s cubic-bezier(.16,1,.3,1);}
+
+  /* github */
+  .repo-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:12px;}
+  .repo-card{border:1px solid var(--border); border-radius:8px; padding:13px 15px; background:var(--surface);}
+  .repo-card .rname{font-family:var(--font-mono); font-size:13px; font-weight:600; color:var(--accent-ink);}
+  .repo-card .rdesc{font-size:12.5px; color:var(--muted); margin-top:5px; line-height:1.5;}
+  .repo-card .rtag{display:inline-block; margin-top:9px; font-size:10.5px; font-family:var(--font-mono); color:var(--faint); background:var(--surface-2); padding:2px 8px; border-radius:3px;}
+  .empty-note{border:1px dashed var(--border); border-radius:8px; padding:18px; text-align:center; color:var(--faint); font-size:13px;}
+
+  /* logs */
+  .log-list{display:flex; flex-direction:column; gap:10px;}
+  .log-row{display:flex; gap:12px; font-size:13px; padding:10px 0; border-bottom:1px dashed var(--border);}
+  .log-row:last-child{border-bottom:none;}
+  .log-row .ldate{font-family:var(--font-mono); color:var(--faint); white-space:nowrap; min-width:82px;}
+  .log-row .ltext{color:var(--muted);}
+
+  /* corner-bracket detail on the primary panels — a quiet nod to terminal/HUD framing */
+  .card, .exec, .kickoff-box{
+    background-image:
+      linear-gradient(var(--accent),var(--accent)), linear-gradient(var(--accent),var(--accent)),
+      linear-gradient(var(--accent),var(--accent)), linear-gradient(var(--accent),var(--accent));
+    background-repeat:no-repeat;
+    background-size: 2px 14px, 14px 2px, 2px 14px, 14px 2px;
+    background-position: 0 0, 0 0, 100% 100%, 100% 100%;
+  }
+
+  /* interactivity — hover lift/glow on the panels that carry it well */
+  .stat, .phase, .cert-row, .repo-card, .card{ transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+  .stat:hover, .phase:hover, .cert-row:hover, .repo-card:hover, .card:hover{ transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--shadow), var(--glow); }
+
+  /* cert-year filter chips */
+  .filter-row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;}
+  .filter-chip{font-family:var(--font-mono); font-size:11px; letter-spacing:.04em; text-transform:uppercase; padding:6px 13px; border-radius:999px; border:1px solid var(--border); background:var(--surface-2); color:var(--muted); cursor:pointer; transition:.15s ease;}
+  .filter-chip:hover{border-color:var(--accent); color:var(--accent-ink);}
+  .filter-chip:active{transform:scale(.94);}
+  .filter-chip.active{background:var(--accent); color:#02110d; border-color:var(--accent); box-shadow:var(--glow); font-weight:700;}
+  .cert-row.hide{display:none;}
+
+  /* skill view toggle */
+  .view-toggle{display:flex; gap:8px; margin-bottom:14px;}
+  .view-toggle button{font-family:var(--font-mono); font-size:11px; letter-spacing:.04em; text-transform:uppercase; padding:6px 13px; border-radius:6px; border:1px solid var(--border); background:var(--surface-2); color:var(--muted); cursor:pointer; transition:.15s ease;}
+  .view-toggle button:active{transform:scale(.94);}
+  .view-toggle button.active{background:var(--accent); color:#02110d; border-color:var(--accent); box-shadow:var(--glow); font-weight:700;}
+  .view-panel.hide{display:none;}
+
+  /* charts */
+  .chart-card{background:var(--surface); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:10px; padding:16px 18px 10px; box-shadow:var(--shadow); margin-bottom:14px;}
+  .chart-card canvas{max-height:220px;}
+  .chart-legend{display:flex; flex-wrap:wrap; gap:14px; margin-top:10px; font-family:var(--font-mono); font-size:11px; color:var(--muted);}
+  .chart-legend .lg-item{display:flex; align-items:center; gap:6px;}
+  .chart-legend .lg-dot{width:9px; height:9px; border-radius:2px; display:inline-block;}
+  .gantt-wrap{background:var(--surface); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:10px; padding:16px 18px; box-shadow:var(--shadow); margin-bottom:14px;}
+  .gantt-bar{display:flex; height:30px; border-radius:5px; overflow:hidden; border:1px solid var(--border); position:relative;}
+  .gantt-seg{display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.04em; color:#02110d; white-space:nowrap; overflow:hidden;}
+  .gantt-marker{position:absolute; top:-4px; bottom:-4px; width:2px; background:var(--crit); box-shadow:0 0 8px rgba(255,61,106,.8);}
+  .gantt-marker::after{content:'TODAY'; position:absolute; top:-16px; left:50%; transform:translateX(-50%); font-family:var(--font-mono); font-size:9px; letter-spacing:.06em; color:var(--crit);}
+
+  footer{margin-top:36px; padding-top:18px; border-top:1px solid var(--border); font-size:12.5px; color:var(--faint); line-height:1.6;}
+  footer strong{color:var(--text);}
+
+  /* lock screen — a light gate, not real security: verify-human keypad before the dashboard reveals */
+  #lockScreen{
+    position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center;
+    padding:20px;
+    background-color:var(--bg);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0px, rgba(255,255,255,.035) 1px, transparent 1px, transparent 3px),
+      linear-gradient(rgba(43,232,201,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(43,232,201,.06) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(3,2,6,.95), rgba(3,2,6,.90) 40%, rgba(3,2,6,.96)),
+      url(bg-room.jpg);
+    background-size: auto, 42px 42px, 42px 42px, cover, cover;
+    background-position: 0 0, center, center, center, center;
+    background-repeat: repeat, repeat, repeat, no-repeat, no-repeat;
+    transition: opacity .5s ease, visibility .5s ease;
+  }
+  #lockScreen.unlocked{ opacity:0; visibility:hidden; pointer-events:none; }
+  .lock-panel{
+    width:min(320px,92vw); background:rgba(6,10,10,.72); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    border:1px solid var(--border); border-radius:10px; padding:22px 22px 18px; box-shadow:var(--shadow), var(--glow);
+    text-align:center; position:relative;
+    background-image:
+      linear-gradient(var(--accent),var(--accent)), linear-gradient(var(--accent),var(--accent)),
+      linear-gradient(var(--accent),var(--accent)), linear-gradient(var(--accent),var(--accent));
+    background-repeat:no-repeat;
+    background-size: 2px 16px, 16px 2px, 2px 16px, 16px 2px;
+    background-position: 0 0, 0 0, 100% 100%, 100% 100%;
+    animation: lockIn .4s ease;
+  }
+  @keyframes lockIn{ from{opacity:0; transform:scale(.96);} to{opacity:1; transform:scale(1);} }
+  .lock-eyebrow{font-family:var(--font-mono); font-size:11px; letter-spacing:.12em; color:var(--accent); text-shadow:0 0 8px rgba(43,232,201,.5); margin-bottom:4px;}
+  .lock-sub{font-family:var(--font-mono); font-size:10.5px; color:var(--faint); margin-bottom:16px;}
+  .lock-display{
+    font-family:var(--font-mono); font-size:22px; letter-spacing:.06em; color:var(--accent-ink);
+    background:#02110d; border:1px solid var(--border); border-radius:6px; padding:14px 10px; margin-bottom:16px;
+    text-shadow:0 0 10px rgba(43,232,201,.6); min-height:1.4em;
+  }
+  .lock-display.denied{ color:var(--crit); text-shadow:0 0 10px rgba(255,61,106,.65); animation: lockShake .35s ease; }
+  @keyframes lockShake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+  .lock-keypad{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+  .lock-key{
+    font-family:var(--font-mono); font-size:16px; padding:14px 0; border-radius:6px; cursor:pointer;
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text); transition:.12s ease;
+  }
+  .lock-key:hover{ border-color:var(--accent); color:var(--accent-ink); box-shadow:0 0 10px rgba(43,232,201,.35); }
+  .lock-key:active{ transform:scale(.94); }
+  .lock-key.wide{ font-size:11px; letter-spacing:.06em; }
+  .lock-status{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em; color:var(--faint); margin-top:12px; min-height:1.4em; }
+
+  /* dashboard content — blurred/hidden until the lock screen clears */
+  #dashboardContent{ transition: opacity .6s ease, filter .6s ease, transform .6s ease; }
+  #dashboardContent.locked{ opacity:0; filter:blur(10px); transform:scale(.98); pointer-events:none; }
+
+  /* entrance choreography — safe by default (fully visible, no JS required);
+     progressively enhanced with a staggered rise-in the instant the lock clears */
+  @keyframes riseIn{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:translateY(0); } }
+  #dashboardContent.animate-in .topbar{ animation:riseIn .7s cubic-bezier(.16,1,.3,1) both; }
+  #dashboardContent.animate-in .updated-line{ animation:riseIn .7s cubic-bezier(.16,1,.3,1) .07s both; }
+  #dashboardContent.animate-in .exec{ animation:riseIn .7s cubic-bezier(.16,1,.3,1) .14s both; }
+  #dashboardContent.animate-in .stat-grid{ animation:riseIn .7s cubic-bezier(.16,1,.3,1) .21s both; }
+  @media (prefers-reduced-motion: reduce){
+    #dashboardContent.animate-in .topbar, #dashboardContent.animate-in .updated-line,
+    #dashboardContent.animate-in .exec, #dashboardContent.animate-in .stat-grid{ animation:none; }
+  }
+
+  /* ambient cursor glow — a quiet HUD-scanner touch confined to the header, off on touch/reduced-motion */
+  .topbar{ position:relative; }
+  .topbar::before{
+    content:""; position:absolute; inset:-24px -20px auto -20px; height:180px; z-index:-1;
+    background:radial-gradient(220px circle at var(--mx,50%) var(--my,0%), rgba(43,232,201,.10), transparent 70%);
+    opacity:0; transition:opacity .4s ease; pointer-events:none;
+  }
+  .topbar.glow-active::before{ opacity:1; }
+  @media (prefers-reduced-motion: reduce), (pointer:coarse){ .topbar::before{ display:none; } }
+</style>
+</head>
+<body>
+
+<div id="lockScreen">
+  <div class="lock-panel">
+    <div class="lock-eyebrow">SYSTEM ACCESS // VERIFY HUMAN</div>
+    <div class="lock-sub">solve to continue</div>
+    <div class="lock-display" id="lockDisplay">2 + 2 = _</div>
+    <div class="lock-keypad" id="lockKeypad">
+      <button class="lock-key" data-k="1">1</button>
+      <button class="lock-key" data-k="2">2</button>
+      <button class="lock-key" data-k="3">3</button>
+      <button class="lock-key" data-k="4">4</button>
+      <button class="lock-key" data-k="5">5</button>
+      <button class="lock-key" data-k="6">6</button>
+      <button class="lock-key" data-k="7">7</button>
+      <button class="lock-key" data-k="8">8</button>
+      <button class="lock-key" data-k="9">9</button>
+      <button class="lock-key wide" data-k="clr">CLR</button>
+      <button class="lock-key" data-k="0">0</button>
+      <button class="lock-key wide" data-k="enter">ENTER</button>
+    </div>
+    <div class="lock-status" id="lockStatus">awaiting input…</div>
+  </div>
+</div>
+
+<div id="dashboardContent" class="locked">
+<div class="topbar">
+  <div>
+    <p class="eyebrow">Solutions Architect Track · 5-Year Path to vCIO</p>
+    <h1>Training Control Center</h1>
+    <p class="subtitle">L1 Support Engineer → L2 Engineer → Network &amp; Cybersecurity Specialist → Solutions Architect → vCIO. Solutions Architect in 36 months or less is this program's goal; vCIO is the next step in the 5-year arc beyond it. Certifications, homelab rebuild, OTS, and business/leadership development, tracked as one program.</p>
+  </div>
+  <div class="kickoff-box">
+    <div class="num" id="kickoff-days">—</div>
+    <div class="lbl">days to kickoff<br><span class="mono" style="font-size:10px;">2026-10-05</span></div>
+  </div>
+</div>
+<p class="updated-line">last updated 2026-09-15 · dynamically maintained — progress, hours, and status reflect time logged against this program</p>
+
+<div class="exec">
+  <p><strong style="color:var(--text);">Program summary.</strong> 36-month plan (kickoff Oct 5, 2026 → close ~Nov 2029) moving from L1 Support Engineer through L2 Engineer and Network &amp; Cybersecurity Specialist toward <strong style="color:var(--text);">Solutions Architect</strong> — this program's 36-month goal — covering both remote MSP support and field network technician work. <strong style="color:var(--text);">vCIO</strong> is the next step in a longer 5-year arc beyond this program, not a second Year 3 capstone alongside it. Year 1 (through Nov 2027) targets nine certifications — AZ-900, MS-900, CCST Networking, CCST Cybersecurity, CCT Collaboration, CCT Routing &amp; Switching, CCNA 200-301, AZ-104, MD-102 — and closes out as an L1→L2/Systems Engineer bridge. Years 2–3 add AB-650, AI-901, Security+, AZ-800/AZ-801, and AZ-305, building toward the Solutions Architect capstone; vCIO Competency Track reps (technology-roadmap delivery, QBR practice, vendor-negotiation reps) continue in parallel as groundwork for that later step, not as the Year 3 focus itself.</p>
+  <p><strong style="color:var(--text);">Future-proofing pass (added 2026-09-13, §29 in the reference doc).</strong> Both target roles are shifting under industry research already folded into this calendar: architects moving from hands-on design toward AI/agent-system orchestration and governance (Microsoft's own new AB-100 credential is built around exactly this), and vCIOs needing real technical-financial fluency for AI-specific cost dynamics (IDC's FinOps-for-AI forecasting). Practical effect on this plan: the homelab AI Gateway build (Y2 Q3) now includes basic agent governance/RBAC from day one, the Year 2 roadmap draft gets an AI cost/ROI section, and two new skill domains (26–27, below) are tracked pending your self-assessment.</p>
+  <p>This page is the working control center; the full reasoning, hour estimates, and risk register live in the companion <em>Master Training Program</em> reference document.</p>
+</div>
+
+<div class="stat-grid">
+  <div class="stat"><div class="lbl">Current Phase</div><div class="val">Phase 0 · Pre-Kickoff</div><div class="sub">2026-09-13 → 2026-10-05</div></div>
+  <div class="stat"><div class="lbl">Current Cert</div><div class="val">None yet — AZ-900 + MS-900 next</div><div class="sub">starts Phase 1</div></div>
+  <div class="stat"><div class="lbl">Certs Held</div><div class="val">0 of 14</div><div class="sub">Year 1 target: 9 · full program: 14</div></div>
+  <div class="stat"><div class="lbl">Current Lab</div><div class="val">Basic Setup — Phase 0</div><div class="sub">Full setup target: Day 60 (2026-12-04)</div></div>
+  <div class="stat"><div class="lbl">Next Exam</div><div class="val">AZ-900</div><div class="sub">target ~early Nov 2026</div></div>
+  <div class="stat"><div class="lbl">Exam Readiness</div><div class="val">Not applicable</div><div class="sub">no active exam window</div></div>
+</div>
+
+<section>
+  <div class="section-head"><h2>Training Time</h2><span class="note">updated as sessions are logged</span></div>
+  <div class="stat-grid" style="margin-bottom:0;">
+    <div class="stat"><div class="lbl">All-Time Hours</div><div class="val">1.5</div><div class="sub">since program setup</div></div>
+    <div class="stat"><div class="lbl">This Week</div><div class="val">1.5 hrs</div><div class="sub">week of 2026-09-14</div></div>
+    <div class="stat"><div class="lbl">Last Session</div><div class="val">2026-09-14 · Homelab</div><div class="sub">1.5 hr — Omarchy install: VMD/AHCI fix, archinstall + Limine redo, gum mirror blocker</div></div>
+    <div class="stat"><div class="lbl">Sessions Logged</div><div class="val">1</div><div class="sub">full log in <em>Training Time Log</em></div></div>
+  </div>
+  <div class="chart-card" style="margin-top:12px;">
+    <canvas id="hoursChart" height="90"></canvas>
+  </div>
+  <p style="font-size:12px; color:var(--faint); margin:12px 2px 0;">Hours reflect time logged directly against program work — study, labs, and hands-on homelab time — and are tallied in the companion <em>Training Time Log</em> (date, category, duration, summary). Totals here refresh as new sessions are recorded, so this view stays current with actual time invested rather than the original plan.</p>
+</section>
+
+<section>
+  <div class="section-head"><h2>Career Ladder — Current Position</h2></div>
+  <div class="ladder">
+    <div class="rung now"><div class="dot"></div><div class="title">L1 Support Engineer</div><div class="when">current · ~4 yrs</div></div>
+    <div class="rung"><div class="dot"></div><div class="title">L2 Engineer</div><div class="when">target ~mid-2027</div></div>
+    <div class="rung"><div class="dot"></div><div class="title">Network &amp; Cybersecurity Specialist</div><div class="when">Year 2</div></div>
+    <div class="rung"><div class="dot"></div><div class="title">Solutions Architect</div><div class="when">36-month program goal</div></div>
+    <div class="rung"><div class="dot"></div><div class="title">vCIO</div><div class="when">5-year goal</div></div>
+  </div>
+  <p style="font-size:12px; color:var(--faint); margin:8px 2px 0;">Network &amp; Cybersecurity Specialist → Solutions Architect → vCIO is the 5-year arc. Solutions Architect in 36 months or less is this program's actual goal — vCIO is the step beyond it, not a parallel Year 3 target.</p>
+</section>
+
+<section>
+  <div class="section-head"><h2>Program Timeline</h2><span class="note">36 months · live position below</span></div>
+  <div class="gantt-wrap">
+    <div class="gantt-bar" id="gantt-bar">
+      <div class="gantt-seg" style="width:1.9%; background:var(--surface-2); color:var(--muted);" title="Pre-Kickoff · Sep 13 – Oct 5, 2026"></div>
+      <div class="gantt-seg" style="width:34.7%; background:var(--series-1);" title="Year 1 · Oct 5, 2026 – Nov 8, 2027">YEAR 1</div>
+      <div class="gantt-seg" style="width:31.7%; background:var(--series-2);" title="Year 2 · Nov 8, 2027 – Nov 6, 2028">YEAR 2</div>
+      <div class="gantt-seg" style="width:31.7%; background:var(--series-3);" title="Year 3 · Nov 6, 2028 – Nov 5, 2029">YEAR 3</div>
+      <div class="gantt-marker" id="gantt-today" style="left:0.1%;"></div>
+    </div>
+    <div class="chart-legend" style="margin-top:12px;">
+      <span class="lg-item"><span class="lg-dot" style="background:var(--surface-2); border:1px solid var(--border);"></span>Pre-Kickoff</span>
+      <span class="lg-item"><span class="lg-dot" style="background:var(--series-1);"></span>Year 1 — 9 certs, homelab rebuild</span>
+      <span class="lg-item"><span class="lg-dot" style="background:var(--series-2);"></span>Year 2 — AB-650→AZ-800/801, vCIO track starts</span>
+      <span class="lg-item"><span class="lg-dot" style="background:var(--series-3);"></span>Year 3 — AZ-305, vCIO capstone, program close</span>
+    </div>
+  </div>
+  <div class="timeline">
+    <div class="phase current"><div class="pnum">PHASE 0</div><div class="ptitle">Pre-Kickoff Setup</div><div class="pdate">Sep 13 – Oct 5, 2026</div><span class="pill current">current</span></div>
+    <div class="phase"><div class="pnum">PHASE 1</div><div class="ptitle">AZ-900 + MS-900</div><div class="pdate">Oct 5 – Nov 2, 2026</div><span class="pill upcoming">upcoming</span></div>
+    <div class="phase"><div class="pnum">PHASE 2</div><div class="ptitle">CCST Networking + Cybersecurity</div><div class="pdate">Nov 2 – Dec 21, 2026</div><span class="pill upcoming">upcoming</span></div>
+    <div class="phase"><div class="pnum">BUFFER</div><div class="ptitle">Holiday Recovery</div><div class="pdate">Dec 21 – Jan 4, 2027</div><span class="pill upcoming">protected</span></div>
+    <div class="phase"><div class="pnum">PHASE 2b</div><div class="ptitle">CCT Collab + Routing &amp; Switching</div><div class="pdate">Jan 4 – Feb 8, 2027</div><span class="pill upcoming">added 09-13</span></div>
+    <div class="phase"><div class="pnum">PHASE 3</div><div class="ptitle">CCNA 200-301 (anchor)</div><div class="pdate">Feb 8 – May 31, 2027</div><span class="pill upcoming">upcoming</span></div>
+    <div class="phase"><div class="pnum">PHASE 4</div><div class="ptitle">AZ-104</div><div class="pdate">Jun 14 – Aug 30, 2027</div><span class="pill upcoming">upcoming</span></div>
+    <div class="phase"><div class="pnum">PHASE 5</div><div class="ptitle">MD-102</div><div class="pdate">Sep 13 – Nov 8, 2027</div><span class="pill upcoming">upcoming</span></div>
+    <div class="phase"><div class="pnum">YEAR 2 · Q1</div><div class="ptitle">AB-650 + AI-901 + Security+</div><div class="pdate">Nov 2027 – Feb 2028</div><span class="pill upcoming">upcoming</span></div>
+    <div class="phase"><div class="pnum">YEAR 2 · Q2</div><div class="ptitle">AZ-800/801 + first OTS ADR</div><div class="pdate">Feb – May 2028</div><span class="pill upcoming">upcoming</span></div>
+    <div class="phase"><div class="pnum">YEAR 2 · Q3</div><div class="ptitle">AI Gateway build-out + mini-QBR</div><div class="pdate">May – Aug 2028</div><span class="pill upcoming">upcoming</span></div>
+    <div class="phase"><div class="pnum">YEAR 2 · Q4</div><div class="ptitle">Roadmap draft + Year 2 close review</div><div class="pdate">Aug – Nov 2028</div><span class="pill upcoming">upcoming</span></div>
+    <div class="phase"><div class="pnum">YEAR 3 · Q1</div><div class="ptitle">AZ-305 prep</div><div class="pdate">Nov 2028 – Feb 2029</div><span class="pill upcoming">upcoming</span></div>
+    <div class="phase"><div class="pnum">YEAR 3 · Q2</div><div class="ptitle">AZ-305 exam + vendor-negotiation reps</div><div class="pdate">Feb – May 2029</div><span class="pill upcoming">upcoming</span></div>
+    <div class="phase"><div class="pnum">YEAR 3 · Q3</div><div class="ptitle">vCIO capstone — live roadmap delivery</div><div class="pdate">May – Aug 2029</div><span class="pill upcoming">upcoming</span></div>
+    <div class="phase"><div class="pnum">YEAR 3 · Q4</div><div class="ptitle">Portfolio consolidation · program close</div><div class="pdate">Aug – Nov 2029</div><span class="pill upcoming">upcoming</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="section-head"><h2>Homelab Fast-Track</h2><span class="note">60 days · decoupled from cert pacing · live position below</span></div>
+  <div class="gantt-wrap">
+    <div class="gantt-bar" id="homelab-gantt-bar">
+      <div class="gantt-seg" style="width:100%; background:var(--surface-2); color:var(--muted);" title="Basic Setup · Sep 13 – Oct 5, 2026 (pre-kickoff)">BASIC SETUP — PRE-KICKOFF</div>
+    </div>
+    <div class="gantt-bar" id="homelab-gantt-bar-2" style="margin-top:8px;">
+      <div class="gantt-seg" style="width:33.3%; background:var(--series-1);" title="Switching Rebuild · Oct 5 – Oct 25, 2026">SWITCHING</div>
+      <div class="gantt-seg" style="width:33.3%; background:var(--series-2);" title="Remote Access · Oct 25 – Nov 14, 2026">REMOTE ACCESS</div>
+      <div class="gantt-seg" style="width:33.4%; background:var(--series-3);" title="Full Setup — Virtualization · Nov 14 – Dec 4, 2026">FULL SETUP</div>
+      <div class="gantt-marker" id="homelab-gantt-today" style="left:0%;"></div>
+    </div>
+    <div class="chart-legend" style="margin-top:12px;">
+      <span class="lg-item"><span class="lg-dot" style="background:var(--surface-2); border:1px solid var(--border);"></span>Basic Setup — pfSense + VLAN 10, done ahead of the 60-day clock</span>
+      <span class="lg-item"><span class="lg-dot" style="background:var(--series-1);"></span>Days 0–20 — Switching Rebuild</span>
+      <span class="lg-item"><span class="lg-dot" style="background:var(--series-2);"></span>Days 20–40 — Remote Access</span>
+      <span class="lg-item"><span class="lg-dot" style="background:var(--series-3);"></span>Days 40–60 — Full Setup (Proxmox + AI Gateway groundwork)</span>
+    </div>
+  </div>
+  <div class="timeline">
+    <div class="phase current"><div class="pnum">PRE-KICKOFF</div><div class="ptitle">Basic Setup</div><div class="pdate">Sep 13 – Oct 5, 2026</div><span class="pill current">current</span></div>
+    <div class="phase"><div class="pnum">DAY 0–20</div><div class="ptitle">Switching Rebuild</div><div class="pdate">Oct 5 – Oct 25, 2026</div><span class="pill upcoming">upcoming</span></div>
+    <div class="phase"><div class="pnum">DAY 20–40</div><div class="ptitle">Remote Access</div><div class="pdate">Oct 25 – Nov 14, 2026</div><span class="pill upcoming">upcoming</span></div>
+    <div class="phase"><div class="pnum">DAY 40–60</div><div class="ptitle">Full Setup — Virtualization</div><div class="pdate">Nov 14 – Dec 4, 2026</div><span class="pill upcoming">target</span></div>
+  </div>
+  <p style="font-size:12px; color:var(--faint); margin:12px 2px 0;">Basic connectivity (pfSense reinstall + VLAN 10) comes online first, ahead of and independent of the 60-day clock below. From kickoff, the full environment — physical switching/trunking, then remote access, then Proxmox virtualization — targets completion by Day 60 (2026-12-04), a realistic pace for hands-on hardware work alongside cert study rather than a sprint. This runs decoupled from the certification study calendar (Program Timeline above), which continues on its own multi-year cadence in parallel.</p>
+</section>
+
+<section class="cols">
+  <div class="card">
+    <div class="section-head"><h2 style="margin-bottom:0;">Next 3 Actions</h2></div>
+    <ul class="action-list">
+      <li><input type="checkbox" id="a1"><label for="a1">Confirm homelab hardware inventory (Dell OptiPlex 3080 box, pfSense host, Catalyst switch, Pi thin client, EliteBook+WD19) against what's actually on hand</label></li>
+      <li><input type="checkbox" id="a2"><label for="a2">Reinstall pfSense and recreate VLAN 10 (LAB) on the rebuilt box</label></li>
+      <li><input type="checkbox" id="a3"><label for="a3">Confirm CBT Nuggets access + install/verify Cisco Packet Tracer, then start AZ-900 module 1</label></li>
+    </ul>
+    <p style="font-size:11px; color:var(--faint); margin:8px 2px 0;">Individual checklist state is local to each viewer's browser and not shared across viewers.</p>
+    <div class="section-head" style="margin-top:20px;"><h2 style="margin-bottom:0;">Current Objectives</h2></div>
+    <div class="kv">
+      <div class="row"><span class="k">OTS</span><span class="v">Docs-only — repo &amp; folder structure reset</span></div>
+      <div class="row"><span class="k">AI / Automation</span><span class="v">Deferred until homelab Full Setup (Day 60 target)</span></div>
+      <div class="row"><span class="k">Leadership</span><span class="v">Not started — Module 1 begins Phase 1</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-head"><h2 style="margin-bottom:0;">Current Weak Areas</h2></div>
+    <div class="chip-row">
+      <span class="chip warn">Security cluster flat at 0/5 (Cybersecurity, Security Architecture, Backup/DR)</span>
+      <span class="chip warn">Solutions Architecture 0/5 — no real reps yet</span>
+      <span class="chip warn">Automation (n8n) + IT Business/MSP Economics 0/5</span>
+      <span class="chip">No cert study started yet — Phase 0</span>
+      <span class="chip">AI/Agent Architecture &amp; FinOps skills flagged (§29) — not yet self-assessed</span>
+    </div>
+    <div class="section-head" style="margin-top:20px;"><h2 style="margin-bottom:0;">Proof of Work</h2></div>
+    <p style="font-size:13.5px; color:var(--muted); margin:0 0 4px;">0 records completed. Year 1 target: 3–4.</p>
+    <p style="font-size:12.5px; color:var(--faint); margin:0;">First record expected once the homelab is stable enough to host a real OTS-facing service (~Phase 5).</p>
+  </div>
+</section>
+
+<section>
+  <div class="section-head"><h2>Certification Roadmap</h2><span class="note">9 in Year 1 · 4 in Year 2 · 1 in Year 3</span></div>
+  <div class="chart-card">
+    <canvas id="certChart" height="90"></canvas>
+  </div>
+  <div class="progress-line">
+    <div class="progress-track"><span style="width:0%;"></span></div>
+    <div class="progress-label">0 / 14 complete</div>
+  </div>
+  <div class="filter-row" id="certFilters">
+    <span class="filter-chip active" data-year="all">All 14</span>
+    <span class="filter-chip" data-year="1">Year 1</span>
+    <span class="filter-chip" data-year="2">Year 2</span>
+    <span class="filter-chip" data-year="3">Year 3</span>
+  </div>
+  <div class="cert-grid" id="certGrid">
+    <div class="cert-row" data-year="1"><span class="idx">01</span><span class="name">AZ-900 <span class="code">Azure Fundamentals</span></span><span class="window">Oct – Nov 2026</span><span class="status upcoming">Upcoming</span></div>
+    <div class="cert-row" data-year="1"><span class="idx">02</span><span class="name">MS-900 <span class="code">M365 Fundamentals</span></span><span class="window">Oct – Nov 2026</span><span class="status upcoming">Upcoming</span></div>
+    <div class="cert-row" data-year="1"><span class="idx">03</span><span class="name">CCST Networking <span class="code">on-ramp to CCNA</span></span><span class="window">Nov – Dec 2026</span><span class="status upcoming">Upcoming</span></div>
+    <div class="cert-row" data-year="1"><span class="idx">04</span><span class="name">CCST Cybersecurity <span class="code">on-ramp to CCNA</span></span><span class="window">Nov – Dec 2026</span><span class="status upcoming">Upcoming</span></div>
+    <div class="cert-row" data-year="1"><span class="idx">05</span><span class="name">CCT Collaboration <span class="code">field tech</span></span><span class="window">Jan – Feb 2027</span><span class="status upcoming">Upcoming</span></div>
+    <div class="cert-row" data-year="1"><span class="idx">06</span><span class="name">CCT Routing &amp; Switching <span class="code">field tech</span></span><span class="window">Jan – Feb 2027</span><span class="status upcoming">Upcoming</span></div>
+    <div class="cert-row" data-year="1"><span class="idx">07</span><span class="name">CCNA 200-301 <span class="code">anchor cert</span></span><span class="window">Feb – May 2027</span><span class="status upcoming">Upcoming</span></div>
+    <div class="cert-row" data-year="1"><span class="idx">08</span><span class="name">AZ-104 <span class="code">Azure Administrator</span></span><span class="window">Jun – Aug 2027</span><span class="status upcoming">Upcoming</span></div>
+    <div class="cert-row" data-year="1"><span class="idx">09</span><span class="name">MD-102 <span class="code">Endpoint Administrator</span></span><span class="window">Sep – Nov 2027</span><span class="status upcoming">Upcoming</span></div>
+    <div class="cert-row" data-year="2"><span class="idx">10</span><span class="name">AB-650 <span class="code">replaces MS-102, retiring Oct 2026</span></span><span class="window">Year 2, Q1</span><span class="status year2">Year 2</span></div>
+    <div class="cert-row" data-year="2"><span class="idx">11</span><span class="name">AI-901 <span class="code">Azure AI Fundamentals</span></span><span class="window">Year 2, Q1</span><span class="status year2">Year 2</span></div>
+    <div class="cert-row" data-year="2"><span class="idx">12</span><span class="name">Security+ SY0-701 <span class="code">4–6 wk window</span></span><span class="window">Year 2, Q1</span><span class="status year2">Year 2</span></div>
+    <div class="cert-row" data-year="2"><span class="idx">13</span><span class="name">AZ-800/AZ-801 <span class="code">Windows Server Hybrid Admin</span></span><span class="window">Year 2, Q2–Q3</span><span class="status year2">Year 2</span></div>
+    <div class="cert-row" data-year="3"><span class="idx">14</span><span class="name">AZ-305 <span class="code">Solutions Architect Expert</span></span><span class="window">Year 3, Q1–Q2</span><span class="status year2">Year 3</span></div>
+  </div>
+</section>
+
+
+<section>
+  <div class="section-head"><h2>Skill Matrix — All 25 Domains</h2><span class="note">0–5 scale · self-assessed 2026-09-13 · avg 1.08/5</span></div>
+  <div class="view-toggle">
+    <button class="active" data-view="chart">By Category</button>
+    <button data-view="detail">All 25 Domains</button>
+  </div>
+
+  <div class="view-panel" data-panel="chart">
+    <div class="chart-card">
+      <canvas id="skillChart" height="130"></canvas>
+    </div>
+  </div>
+
+  <div class="view-panel hide" data-panel="detail">
+  <div class="skill-cat">
+    <h3>Networking &amp; Infrastructure</h3>
+    <div class="skill-grid">
+      <div class="skill"><div class="top"><span class="name">Network Engineering</span><span class="score mono">1/5</span></div><div class="bar"><span style="width:20%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">Systems Administration</span><span class="score mono">2/5</span></div><div class="bar"><span style="width:40%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">Virtualization (Proxmox)</span><span class="score mono">1/5</span></div><div class="bar"><span style="width:20%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">Linux</span><span class="score mono">1/5</span></div><div class="bar"><span style="width:20%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">Endpoint Management</span><span class="score mono">1/5</span></div><div class="bar"><span style="width:20%;"></span></div></div>
+    </div>
+  </div>
+
+  <div class="skill-cat">
+    <h3>Cloud &amp; Identity</h3>
+    <div class="skill-grid">
+      <div class="skill"><div class="top"><span class="name">Cloud Architecture</span><span class="score mono">1/5</span></div><div class="bar"><span style="width:20%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">Azure Administration</span><span class="score mono">1/5</span></div><div class="bar"><span style="width:20%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">Microsoft 365 Administration</span><span class="score mono">2.5/5</span></div><div class="bar"><span style="width:50%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">Identity &amp; Access Management</span><span class="score mono">1.5/5</span></div><div class="bar"><span style="width:30%;"></span></div></div>
+    </div>
+  </div>
+
+  <div class="skill-cat">
+    <h3>Security</h3>
+    <div class="skill-grid">
+      <div class="skill"><div class="top"><span class="name">Cybersecurity</span><span class="score mono">0/5</span></div><div class="bar"><span style="width:3%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">Security Architecture</span><span class="score mono">0/5</span></div><div class="bar"><span style="width:3%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">Backup / Disaster Recovery</span><span class="score mono">0/5</span></div><div class="bar"><span style="width:3%;"></span></div></div>
+    </div>
+  </div>
+
+  <div class="skill-cat">
+    <h3>Automation &amp; AI</h3>
+    <div class="skill-grid">
+      <div class="skill"><div class="top"><span class="name">Automation (n8n)</span><span class="score mono">0/5</span></div><div class="bar"><span style="width:3%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">Local AI / LLM Infrastructure</span><span class="score mono">1/5</span></div><div class="bar"><span style="width:20%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">AI for IT Operations</span><span class="score mono">1/5</span></div><div class="bar"><span style="width:20%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">DevOps / Infrastructure as Code</span><span class="score mono">0.5/5</span></div><div class="bar"><span style="width:10%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">Observability &amp; Monitoring</span><span class="score mono">2/5</span></div><div class="bar"><span style="width:40%;"></span></div></div>
+    </div>
+  </div>
+
+  <div class="skill-cat">
+    <h3>Architecture &amp; Documentation</h3>
+    <div class="skill-grid">
+      <div class="skill"><div class="top"><span class="name">Solutions Architecture</span><span class="score mono">0/5</span></div><div class="bar"><span style="width:3%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">Technical Documentation</span><span class="score mono">2.5/5</span></div><div class="bar"><span style="width:50%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">Technical Communication</span><span class="score mono">2.5/5</span></div><div class="bar"><span style="width:50%;"></span></div></div>
+    </div>
+  </div>
+
+  <div class="skill-cat">
+    <h3>Delivery, Leadership &amp; Business</h3>
+    <div class="skill-grid">
+      <div class="skill"><div class="top"><span class="name">MSP Service Delivery</span><span class="score mono">1.5/5</span></div><div class="bar"><span style="width:30%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">IT Operations Management</span><span class="score mono">1.5/5</span></div><div class="bar"><span style="width:30%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">IT Leadership</span><span class="score mono">1.5/5</span></div><div class="bar"><span style="width:30%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">Project Management</span><span class="score mono">1/5</span></div><div class="bar"><span style="width:20%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">IT Business / MSP Economics</span><span class="score mono">0/5</span></div><div class="bar"><span style="width:3%;"></span></div></div>
+    </div>
+  </div>
+
+  <div class="skill-cat">
+    <h3>Future-Proofing — pending self-assessment (added 2026-09-13)</h3>
+    <div class="skill-grid">
+      <div class="skill"><div class="top"><span class="name">AI / Agent Architecture &amp; Governance</span><span class="score mono">—</span></div><div class="bar"><span style="width:0%;"></span></div></div>
+      <div class="skill"><div class="top"><span class="name">FinOps / AI Cost Engineering</span><span class="score mono">—</span></div><div class="bar"><span style="width:0%;"></span></div></div>
+    </div>
+  </div>
+  </div><!-- /view-panel detail -->
+</section>
+
+<section>
+  <div class="section-head"><h2>GitHub Projects</h2><span class="note">OTS &amp; homelab repos</span></div>
+  <div class="repo-grid">
+    <a class="repo-card" href="https://github.com/quanwatson/techtheworld-homelab" target="_blank" rel="noopener" style="text-decoration:none; display:block;">
+      <div class="rname">techtheworld-homelab</div>
+      <div class="rdesc">File-of-record for the homelab build — network, systems, and solutions-architecture documentation, phase-gated and documentation-first.</div>
+      <span class="rtag">homelab · build docs</span>
+    </a>
+  </div>
+</section>
+
+<section>
+  <div class="section-head"><h2>Homelab Build Log</h2><span class="note">stack confirmed 2026-09-13</span></div>
+  <div class="card">
+    <div class="kv">
+      <div class="row"><span class="k">Status</span><span class="v">Basic Setup — Phase 0 (fast track, decoupled from cert pacing)</span></div>
+      <div class="row"><span class="k">Daily driver</span><span class="v">Dell OptiPlex 3080 · GTX 1060 6GB · 32GB RAM · single 512GB NVMe (single-OS) · Omarchy install in progress — blocked on gum mirror 404</span></div>
+      <div class="row"><span class="k">Creative workstation</span><span class="v">Mac Pro 2013</span></div>
+      <div class="row"><span class="k">Virtualization host</span><span class="v">Lenovo box → Proxmox (target: Full Setup, Day 60)</span></div>
+      <div class="row"><span class="k">Network</span><span class="v">pfSense box · reinstall + VLAN 10 pending</span></div>
+      <div class="row"><span class="k">Switching</span><span class="v">Cisco 8-port · trunking not yet rebuilt</span></div>
+      <div class="row"><span class="k">Edge / access</span><span class="v">2× Raspberry Pi (thin client + retro/streaming box) · Cloudflare · Tailscale</span></div>
+      <div class="row"><span class="k">Cloud compute</span><span class="v">RunPod (AI video) · Hostinger KVM 4/8 (public-facing)</span></div>
+      <div class="row"><span class="k">Full setup target</span><span class="v">Day 60 · 2026-12-04</span></div>
+      <div class="row"><span class="k">Metrics captured</span><span class="v">None yet — first measurement pass targets Day 60</span></div>
+    </div>
+    <p style="font-size:12px; color:var(--faint); margin:12px 2px 0;">The homelab build runs on its own faster track, decoupled from the certification study calendar — basic connectivity comes online first, with the full environment (switching, remote access, virtualization) targeted for completion within the program's first 60 days, a realistic window for hands-on hardware work alongside cert study rather than paced against individual exam windows. See the phase map below.</p>
+  </div>
+</section>
+
+<section class="cols">
+  <div class="card">
+    <div class="section-head"><h2 style="margin-bottom:0;">Proof-of-Work Log</h2></div>
+    <p style="font-size:13px; color:var(--faint); margin:0;">No entries yet. Entries appear here as OTS/homelab projects are completed and documented.</p>
+  </div>
+  <div class="card">
+    <div class="section-head"><h2 style="margin-bottom:0;">Monthly Review Log</h2></div>
+    <p style="font-size:13px; color:var(--faint); margin:0;">First monthly review due end of November 2026, after Phase 1 completes.</p>
+  </div>
+</section>
+
+<footer>
+  <strong>How this page stays current:</strong> this is a living status page for the certification and training program, updated on an ongoing basis as coursework, labs, and hands-on homelab work are completed and logged. Progress metrics, the certification roadmap, the skill matrix, and training-hour totals are drawn directly from that logged activity, so the figures shown here track actual time invested and work completed rather than a static plan set at kickoff. This is the same page throughout the program — updates land in place, so this link always reflects current status rather than a point-in-time snapshot. Full program scope, certification sequencing, and planning detail are maintained in the companion <em>Master Training Program</em> reference document; session-level time detail is maintained in the companion <em>Training Time Log</em>.
+</footer>
+</div><!-- /#dashboardContent -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script>
+(function(){
+  // lock screen — famous, basic math check before the dashboard reveals
+  try{
+    var buffer = '';
+    var ANSWER = '4'; // 2 + 2
+    var display = document.getElementById('lockDisplay');
+    var status = document.getElementById('lockStatus');
+    var lockScreen = document.getElementById('lockScreen');
+    var dashboard = document.getElementById('dashboardContent');
+    document.body.style.overflow = 'hidden';
+
+    function render(){
+      display.classList.remove('denied');
+      display.textContent = '2 + 2 = ' + (buffer || '_');
+    }
+    function deny(){
+      status.textContent = 'access denied — try again';
+      display.classList.remove('denied'); void display.offsetWidth; display.classList.add('denied');
+      buffer = '';
+      setTimeout(render, 250);
+    }
+    function unlock(){
+      status.textContent = 'access granted';
+      display.textContent = 'ACCESS GRANTED';
+      setTimeout(function(){
+        lockScreen.classList.add('unlocked');
+        dashboard.classList.remove('locked');
+        dashboard.classList.add('animate-in');
+        document.body.style.overflow = '';
+        setTimeout(function(){ lockScreen.style.display = 'none'; }, 550);
+        if (typeof revealBars === 'function') revealBars();
+      }, 450);
+    }
+    document.getElementById('lockKeypad').addEventListener('click', function(e){
+      var btn = e.target.closest('.lock-key');
+      if (!btn) return;
+      var k = btn.getAttribute('data-k');
+      if (k === 'clr'){ buffer = ''; status.textContent = 'cleared'; render(); return; }
+      if (k === 'enter'){
+        if (buffer === ANSWER) unlock(); else deny();
+        return;
+      }
+      if (buffer.length < 3) buffer += k;
+      status.textContent = 'awaiting input…';
+      render();
+    });
+    document.addEventListener('keydown', function(e){
+      if (lockScreen.classList.contains('unlocked')) return;
+      if (e.key >= '0' && e.key <= '9'){ if (buffer.length < 3) buffer += e.key; status.textContent = 'awaiting input…'; render(); }
+      else if (e.key === 'Enter'){ if (buffer === ANSWER) unlock(); else deny(); }
+      else if (e.key === 'Backspace' || e.key === 'Delete'){ buffer = ''; render(); }
+    });
+    render();
+  }catch(e){
+    // if the lock screen script fails for any reason, never trap the user out of their own dashboard
+    var ls = document.getElementById('lockScreen'); if (ls) ls.style.display = 'none';
+    var db = document.getElementById('dashboardContent'); if (db) db.classList.remove('locked');
+    document.body.style.overflow = '';
+    if (typeof revealBars === 'function') revealBars();
+  }
+
+  try{
+    var target = new Date('2026-10-05T00:00:00');
+    var now = new Date();
+    var days = Math.ceil((target - now) / 86400000);
+    var el = document.getElementById('kickoff-days');
+    if (days > 0) el.textContent = days;
+    else if (days === 0) el.textContent = '0';
+    else el.textContent = 'started';
+  }catch(e){}
+
+  try{
+    var boxes = document.querySelectorAll('.action-list input[type="checkbox"]');
+    boxes.forEach(function(b){
+      var key = 'tcc_' + b.id;
+      var saved = localStorage.getItem(key);
+      if (saved === '1') b.checked = true;
+      b.addEventListener('change', function(){
+        try{ localStorage.setItem(key, b.checked ? '1' : '0'); }catch(e){}
+      });
+    });
+  }catch(e){}
+
+  // live "today" marker on the program timeline gantt bar — recomputes from the
+  // viewer's own clock every time the page loads, no republish needed for this part
+  try{
+    var preStart = new Date('2026-09-13T00:00:00');
+    var y3Close  = new Date('2029-11-05T00:00:00');
+    var totalMs = y3Close - preStart;
+    var elapsedMs = new Date() - preStart;
+    var pct = Math.max(0, Math.min(100, (elapsedMs / totalMs) * 100));
+    var marker = document.getElementById('gantt-today');
+    if (marker) marker.style.left = pct.toFixed(2) + '%';
+  }catch(e){}
+
+  // live "today" marker on the homelab fast-track gantt bar (Day 0 = kickoff, Day 60 = full setup target)
+  try{
+    var hlStart = new Date('2026-10-05T00:00:00');
+    var hlEnd   = new Date('2026-12-04T00:00:00');
+    var hlTotalMs = hlEnd - hlStart;
+    var hlElapsedMs = new Date() - hlStart;
+    var hlPct = Math.max(0, Math.min(100, (hlElapsedMs / hlTotalMs) * 100));
+    var hlMarker = document.getElementById('homelab-gantt-today');
+    if (hlMarker) hlMarker.style.left = hlPct.toFixed(2) + '%';
+  }catch(e){}
+
+  // cert-year filter chips
+  try{
+    var chips = document.querySelectorAll('#certFilters .filter-chip');
+    var rows = document.querySelectorAll('#certGrid .cert-row');
+    chips.forEach(function(chip){
+      chip.addEventListener('click', function(){
+        chips.forEach(function(c){ c.classList.remove('active'); });
+        chip.classList.add('active');
+        var yr = chip.getAttribute('data-year');
+        rows.forEach(function(row){
+          if (yr === 'all' || row.getAttribute('data-year') === yr) row.classList.remove('hide');
+          else row.classList.add('hide');
+        });
+      });
+    });
+  }catch(e){}
+
+  // skill matrix view toggle
+  try{
+    var toggleBtns = document.querySelectorAll('.view-toggle button');
+    toggleBtns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        toggleBtns.forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        var view = btn.getAttribute('data-view');
+        document.querySelectorAll('.view-panel').forEach(function(panel){
+          if (panel.getAttribute('data-panel') === view) panel.classList.remove('hide');
+          else panel.classList.add('hide');
+        });
+      });
+    });
+  }catch(e){}
+
+  // ===== DASHBOARD DATA — edit these arrays when updating the dashboard, charts follow =====
+  var CERT_DATA = { complete: 0, year1Remaining: 9, year2Remaining: 4, year3Remaining: 1 };
+  var SKILL_CATEGORY_DATA = [
+    { label: 'Networking & Infra',        avg: 1.20 },
+    { label: 'Cloud & Identity',          avg: 1.50 },
+    { label: 'Security',                  avg: 0.00 },
+    { label: 'Automation & AI',           avg: 0.90 },
+    { label: 'Architecture & Docs',       avg: 1.67 },
+    { label: 'Delivery/Leadership/Biz',   avg: 1.10 }
+  ];
+  var HOURS_DATA = [
+    { week: 'Wk of 09-14', hours: 1.5 }
+  ];
+  // ===== end dashboard data =====
+
+  // derive the cert progress bar + label from CERT_DATA so they can never drift out of
+  // sync with the doughnut chart above — both read the same source object
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  try{
+    var totalCerts = CERT_DATA.complete + CERT_DATA.year1Remaining + CERT_DATA.year2Remaining + CERT_DATA.year3Remaining;
+    var certPct = totalCerts > 0 ? (CERT_DATA.complete / totalCerts * 100) : 0;
+    var certBarEl = document.querySelector('.progress-track > span');
+    var certLabelEl = document.querySelector('.progress-label');
+    if (certBarEl) certBarEl.style.width = certPct.toFixed(1) + '%';
+    if (certLabelEl) certLabelEl.textContent = CERT_DATA.complete + ' / ' + totalCerts + ' complete';
+  }catch(e){}
+
+  // fill-in animation for the cert progress bar + all skill bars — triggered once,
+  // right as the dashboard becomes visible (not scroll-gated, so nothing below the
+  // fold is ever left sitting at 0% for a viewer who scrolls before an observer fires)
+  function revealBars(){
+    if (reduceMotion) return; // widths are already correct; skip the animated fill
+    document.querySelectorAll('.progress-track > span, .bar > span').forEach(function(el){
+      var target = el.style.width || '0%';
+      el.style.width = '0%';
+      void el.offsetWidth; // force reflow so the transition actually runs
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){ el.style.width = target; });
+      });
+    });
+  }
+
+  // ambient cursor glow in the header — off for touch/coarse pointers and reduced motion
+  try{
+    if (!reduceMotion && window.matchMedia && window.matchMedia('(pointer:fine)').matches){
+      var topbarEl = document.querySelector('.topbar');
+      if (topbarEl){
+        topbarEl.addEventListener('mouseenter', function(){ topbarEl.classList.add('glow-active'); });
+        topbarEl.addEventListener('mouseleave', function(){ topbarEl.classList.remove('glow-active'); });
+        topbarEl.addEventListener('mousemove', function(e){
+          var r = topbarEl.getBoundingClientRect();
+          topbarEl.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+          topbarEl.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+        });
+      }
+    }
+  }catch(e){}
+
+  try{
+    if (typeof Chart === 'undefined') throw new Error('Chart.js failed to load');
+
+    var rootStyles = getComputedStyle(document.documentElement);
+    var cssVar = function(name){ return rootStyles.getPropertyValue(name).trim(); };
+    var gridColor = cssVar('--chart-grid');
+    var axisColor = cssVar('--chart-axis');
+    var textColor = cssVar('--muted');
+    var fontMono = "'Share Tech Mono', monospace";
+
+    Chart.defaults.color = textColor;
+    Chart.defaults.font.family = fontMono;
+    Chart.defaults.font.size = 11;
+
+    // Certification Progress — doughnut
+    new Chart(document.getElementById('certChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Complete', 'Year 1 remaining', 'Year 2 remaining', 'Year 3 remaining'],
+        datasets: [{
+          data: [CERT_DATA.complete, CERT_DATA.year1Remaining, CERT_DATA.year2Remaining, CERT_DATA.year3Remaining],
+          backgroundColor: [cssVar('--good'), cssVar('--series-1'), cssVar('--series-2'), cssVar('--series-3')],
+          borderColor: cssVar('--bg'),
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '68%',
+        animation: { animateRotate: true, duration: 900 },
+        plugins: {
+          legend: { position: 'right', labels: { boxWidth: 12, padding: 14 } },
+          tooltip: {
+            backgroundColor: '#0a0710', borderColor: cssVar('--border'), borderWidth: 1,
+            titleFont: { family: fontMono }, bodyFont: { family: fontMono },
+            callbacks: { label: function(ctx){ return ctx.label + ': ' + ctx.parsed + ' cert' + (ctx.parsed === 1 ? '' : 's'); } }
+          }
+        }
+      }
+    });
+
+    // Skill Matrix by Category — horizontal bar
+    new Chart(document.getElementById('skillChart'), {
+      type: 'bar',
+      data: {
+        labels: SKILL_CATEGORY_DATA.map(function(d){ return d.label; }),
+        datasets: [{
+          label: 'Avg self-assessed score (0–5)',
+          data: SKILL_CATEGORY_DATA.map(function(d){ return d.avg; }),
+          backgroundColor: cssVar('--series-seq'),
+          borderRadius: 4,
+          maxBarThickness: 26
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 800 },
+        scales: {
+          x: { min: 0, max: 5, grid: { color: gridColor }, ticks: { color: axisColor }, border: { color: axisColor } },
+          y: { grid: { display: false }, ticks: { color: textColor }, border: { color: axisColor } }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0a0710', borderColor: cssVar('--border'), borderWidth: 1,
+            titleFont: { family: fontMono }, bodyFont: { family: fontMono },
+            callbacks: { label: function(ctx){ return ctx.parsed.x.toFixed(2) + ' / 5'; } }
+          }
+        }
+      }
+    });
+
+    // Training Hours Logged — weekly bar
+    new Chart(document.getElementById('hoursChart'), {
+      type: 'bar',
+      data: {
+        labels: HOURS_DATA.map(function(d){ return d.week; }),
+        datasets: [{
+          label: 'Hours logged',
+          data: HOURS_DATA.map(function(d){ return d.hours; }),
+          backgroundColor: cssVar('--accent'),
+          borderRadius: 4,
+          maxBarThickness: 34
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 800 },
+        scales: {
+          y: { min: 0, max: 15, grid: { color: gridColor }, ticks: { color: axisColor, stepSize: 5 }, border: { color: axisColor } },
+          x: { grid: { display: false }, ticks: { color: textColor }, border: { color: axisColor } }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0a0710', borderColor: cssVar('--border'), borderWidth: 1,
+            titleFont: { family: fontMono }, bodyFont: { family: fontMono },
+            callbacks: { label: function(ctx){ return ctx.parsed.y + ' hrs'; } }
+          }
+        }
+      }
+    });
+  }catch(e){
+    // Chart.js blocked or failed to load — the rest of the dashboard (bars, tables, gantt) still works without it
+    document.querySelectorAll('.chart-card canvas').forEach(function(c){
+      var note = document.createElement('p');
+      note.style.cssText = 'font-family:Share Tech Mono,monospace;font-size:11px;color:var(--faint);text-align:center;padding:20px 0;';
+      note.textContent = 'Chart failed to load — data still available in the sections below.';
+      c.replaceWith(note);
+    });
+  }
+})();
+</script>
+
+</body></html>
